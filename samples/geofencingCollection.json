@@ -1,0 +1,118 @@
+{
+    "type": "GeometryCollection",
+    "geometries": [{
+        "type": "Point",
+        "coordinates": [-122.126986, 47.639754]
+    },{
+        "type": "LineString",
+        "coordinates": [
+            [101.0, 0.0],
+            [102.0, 1.0]
+        ]
+    }],
+    "properties": {
+        "geofenceExtensions": [
+            {
+                "id" : "1",
+                "@type": "Geofence:Circle",
+                "displayName":"",
+                "description":"",
+                "tags":[],
+                "priority":0,
+                "radius": 500,
+                "modifiers": [
+                    {
+                        "id" : "9",
+                        "@type" : "Geofence:Expiration",
+                        "displayName":"",
+                        "description":"",
+                        "tags":[],
+                        "when"  : "2021-01-01T00:00:00"
+                    },
+                    {
+                        "id" : "10",
+                        "@type" : "Geofence:ValidityPeriods",
+                        "displayName":"",
+                        "description":"",
+                        "tags":[],
+                        "periods": [
+                            {
+                                "from": "2021-10-22T09:00:00",
+                                "to": "2021-10-22T17:00:00",
+                                "recurrenceType": "daily",
+                                "recurrenceFrequency": 1
+                            }
+                        ],
+                        "exceptions": []
+                    }
+                ],
+                "alerts": [
+                    {
+                        "id" : "2",
+                        "@type": "Geofence:Alert",
+                        "displayName":"",
+                        "description":"",
+                        "tags":[],
+                        "priority":0,                
+                        "relativeTo": "enter",
+                        "modifiers":[                            
+                            {
+                            "@type" : "Geofence:Occurence",
+                            "value"  : 1
+                            }
+                        ]
+                    },
+                    {
+                        "id" : "3",
+                        "@type": "Geofence:Alert",
+                        "relativeTo": "exit",
+                         "modifiers":[
+                            {
+                                "@type" : "Geofence:Occurence",
+                                "value"  : 1
+                            }
+                        ]
+                    },
+                    {
+                        "id" : "4",
+                        "@type": "Geofence:Alert",
+                        "relativeTo": "inside",
+                        "modifiers":[],
+                        "actions":[]                   },
+                    {
+                        "id" : "4",
+                        "@type": "Geofence:Alert",
+                        "relativeTo": "outside",
+                        "modifiers":[
+                            {
+                                "@type" : "Geofence:Duration",
+                                "value"  : 300,
+                                "unit"   :"s"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id" : "12",
+                "@type": "Geofence:Segment",
+                "displayName":"",
+                "description":"",
+                "tags":[],
+                "priority":0,
+                "alerts": [
+                    {
+                        "id" : "22",
+                        "@type": "Geofence:Alert",
+                        "displayName":"",
+                        "description":"",
+                        "tags":[],
+                        "priority":0,                
+                        "relativeTo": "intersect",
+                        "modifiers":[]
+                    }
+                ]
+           }
+        ]
+    }
+}
