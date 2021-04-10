@@ -1,0 +1,89 @@
+{
+    "type": "Feature",
+    "geometry": {
+        "type": "LineString",
+               "coordinates": [
+                   [102.0, 0.0],
+                   [103.0, 1.0],
+                   [104.0, 0.0],
+                   [105.0, 1.0]
+               ]  
+    },
+    "properties": {
+        "geofenceExtension": {
+            "id" : "1",
+            "@type": "Geofence:Path",
+            "displayName":"",
+            "description":"",
+            "tags":[],
+            "priority":0,
+            "radius":50,
+            "modifiers": [
+                {
+                    "id" : "9",
+                    "@type" : "Geofence:Expiration",
+                    "displayName":"",
+                    "description":"",
+                    "tags":[],
+                    "when"  : "2021-01-01T00:00:00"
+                },
+                {
+                    "id" : "10",
+                    "@type" : "Geofence:ValidityPeriods",
+                    "displayName":"",
+                    "description":"",
+                    "tags":[],
+                    "periods": [
+                        {
+                            "from": "2021-10-22T09:00:00",
+                            "to": "2021-10-22T17:00:00",
+                            "recurrenceType": "daily",
+                            "recurrenceFrequency": 1
+                        }
+                    ],
+                    "exceptions": []
+                }
+            ],
+            "alerts": [
+                {
+                    "id" : "2",
+                    "@type": "Geofence:Alert",
+                    "displayName":"",
+                    "description":"",
+                    "tags":[],
+                    "priority":0,                
+                    "relativeTo": "enter",
+                    "actions":[],
+                    "modifiers":[]
+                },
+                {
+                    "id" : "3",
+                    "@type": "Geofence:Alert",
+                    "relativeTo": "exit",
+                    "actions":[],
+                    "modifiers":[]
+                },
+                {
+                    "id" : "4",
+                    "@type": "Geofence:Alert",
+                    "relativeTo": "inside",
+                    "actions":[],
+                    "modifiers":[]
+                },
+                {
+                    "id" : "4",
+                    "@type": "Geofence:Alert",
+                    "relativeTo": "outside",
+                    "actions":[],
+                    "modifiers":[
+                        {
+                            "@type" : "Geofence:Duration",
+                            "value"  : 300,
+                            "unit"   :"s"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
