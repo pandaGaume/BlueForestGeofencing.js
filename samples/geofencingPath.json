@@ -3,51 +3,52 @@
     "geometry": {
         "type": "LineString",
                "coordinates": [
-                   [102.0, 0.0],
-                   [103.0, 1.0],
-                   [104.0, 0.0],
-                   [105.0, 1.0]
+                [ 6.868795, 45.923695 ],
+                [ 6.86973, 45.923388 ],
+                [ 6.865439, 45.919122 ],
+                [ 6.862807, 45.917741 ],
+                [ 6.855994, 45.916145 ]
                ]  
     },
     "properties": {
         "geofenceExtension": {
-            "id" : "1",
-            "@type": "Geofence:Path",
+            "id" : "",
+            "@type": "geoPath",
             "displayName":"",
             "description":"",
             "tags":[],
             "priority":0,
-            "radius":50,
+            "radius": 50,
             "modifiers": [
                 {
-                    "id" : "9",
-                    "@type" : "Geofence:Expiration",
+                    "id" : "",
+                    "@type" : "geoExpiration",
                     "displayName":"",
                     "description":"",
                     "tags":[],
                     "when"  : "2021-01-01T00:00:00"
                 },
                 {
-                    "id" : "10",
-                    "@type" : "Geofence:ValidityPeriods",
+                    "id" : "",
+                    "@type" : "geoValidityPeriods",
                     "displayName":"",
                     "description":"",
                     "tags":[],
                     "periods": [
                         {
+                            "@type": "geoPeriod",
                             "from": "2021-10-22T09:00:00",
                             "to": "2021-10-22T17:00:00",
-                            "recurrenceType": "daily",
-                            "recurrenceFrequency": 1
+                            "frequency": "daily",
+                            "count": 1
                         }
-                    ],
-                    "exceptions": []
-                }
+                    ]
+                 }
             ],
             "alerts": [
                 {
                     "id" : "2",
-                    "@type": "Geofence:Alert",
+                    "@type": "geoAlert",
                     "displayName":"",
                     "description":"",
                     "tags":[],
@@ -58,26 +59,19 @@
                 },
                 {
                     "id" : "3",
-                    "@type": "Geofence:Alert",
+                    "@type": "geoAlert",
                     "relativeTo": "exit",
                     "actions":[],
                     "modifiers":[]
                 },
                 {
                     "id" : "4",
-                    "@type": "Geofence:Alert",
-                    "relativeTo": "inside",
-                    "actions":[],
-                    "modifiers":[]
-                },
-                {
-                    "id" : "4",
-                    "@type": "Geofence:Alert",
+                    "@type": "geoAlert",
                     "relativeTo": "outside",
                     "actions":[],
                     "modifiers":[
                         {
-                            "@type" : "Geofence:Duration",
+                            "@type" : "geoDuration",
                             "value"  : 300,
                             "unit"   :"s"
                         }
