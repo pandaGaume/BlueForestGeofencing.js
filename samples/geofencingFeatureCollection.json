@@ -5,7 +5,7 @@
             "type": "Feature",
             "geometry": {
                 "type": "Point",
-                "coordinates": [48.639946000000016, 2.5741880846574667]
+                "coordinates": [2.5741880846574667, 48.639946000000016]
             },
             "properties": {
                 "geofenceExtension": {
