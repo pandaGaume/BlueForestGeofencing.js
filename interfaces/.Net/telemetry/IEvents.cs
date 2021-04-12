@@ -33,6 +33,7 @@ namespace IOfThings.Telemetry
         dynamic State { get; set; }
         bool? AckRequired { get; set; }
         object Cookie { get; set; }
+        object ActorID { get; set; }
     }
 
     public interface ITrackingEvent : ISimpleEvent
