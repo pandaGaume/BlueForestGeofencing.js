@@ -2,7 +2,7 @@
 
 namespace IOfThings.Spatial.GeoFencing
 {
-    public interface IGeofencingEvent : ITrackingEvent
+    public interface IGeofencingEvent : IConditionEvent
     {
     }
 }
