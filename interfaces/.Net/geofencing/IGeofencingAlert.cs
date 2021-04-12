@@ -1,13 +1,9 @@
 ﻿namespace IOfThings.Spatial.GeoFencing
 {
-    public enum AlertType
-    {
-
-    }
 
     public interface IGeofencingAlert : IGeofencingNode
     {
-        AlertType RelativeTo { get; set; }
+        string RelativeTo { get; set; }
 
         string Category { get; set; }
 
