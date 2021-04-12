@@ -4,8 +4,8 @@ namespace IOfThings.Spatial.GeoFencing
 {
     public class GeofencingKnownType
     {
-        public const string Namespace  = "BlueForest.Geofencing";
-        public const string PreferredPrefix  = "bfgf";
+        public const string Namespace  = "IOfThings.Spatial.GeoFencing";
+        public const string PreferredPrefix  = "iotgf";
 
 #region Geometry
         public const string GeoCircle  = "geoCircle";
