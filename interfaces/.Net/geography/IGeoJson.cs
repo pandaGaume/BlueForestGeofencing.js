@@ -12,17 +12,17 @@ namespace IOfThings.Spatial.Geography.Text
         MultiPolygon
     }
 
-    public interface IGeoJsonFeature<T>
+    public interface IGeoJsonFeature<T> : IGeoBounded
     {
         IGeoJsonGeometry Geometry { get; set; }
         Dictionary<string,T> Properties { get; }
     }
 
-    public interface IGeoJsonFeatureCollection<T> : IEnumerable<IGeoJsonFeature<T>>
+    public interface IGeoJsonFeatureCollection<T> : IEnumerable<IGeoJsonFeature<T>>, IGeoBounded
     {
     }
 
-    public interface IGeoJsonGeometry
+    public interface IGeoJsonGeometry : IGeoBounded
     {
         GeospatialType Type { get; }
     }
@@ -31,6 +31,7 @@ namespace IOfThings.Spatial.Geography.Text
     {
         double[] Coordinates { get; set; }
     }
+
     public interface ICompoundGeometry : IGeoJsonGeometry
     {
         double[][] Coordinates { get; set; }
