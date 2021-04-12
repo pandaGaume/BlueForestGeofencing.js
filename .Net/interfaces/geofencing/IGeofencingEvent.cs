@@ -1,6 +1,8 @@
-﻿namespace IOfThings.Spatial.GeoFencing
+﻿using IOfThings.Telemetry;
+
+namespace IOfThings.Spatial.GeoFencing
 {
-    public interface IGeofencingEvent
+    public interface IGeofencingEvent : ITrackingEvent
     {
     }
 }
