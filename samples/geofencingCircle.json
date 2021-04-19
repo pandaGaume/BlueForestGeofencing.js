@@ -6,79 +6,55 @@
     },
     "properties": {
         "geofenceExtension": {
-            "id" : "",
-            "@type": "geoCircle",
-            "displayName":"",
-            "description":"",
-            "tags":[],
-            "priority":0,
-            "radius": 500,
-            "modifiers": [
+			"shapes" :[
+				{
+					"@type": "Circle",
+  					"uid" : "d42d7ff3-7012-4fbb-9fea-39fa2265b9a2",
+					"displayName":"",
+					"description":"",
+					"geometry":0,
+					"radius": 500
+				}
+			],
+			"modifiers":[
                 {
-                    "id" : "",
-                    "@type" : "geoExpiration",
-                    "displayName":"",
-                    "description":"",
-                    "tags":[],
+                    "@type" : "Expiration",
+  					"uid" : "9d79944f-620f-46d1-877f-c87689225426",
                     "when"  : "2021-01-01T00:00:00"
                 },
                 {
-                    "id" : "",
-                    "@type" : "geoValidityPeriods",
-                    "displayName":"",
-                    "description":"",
-                    "tags":[],
+                    "@type" : "ValidityPeriods",
+  					"uid" : "ef07e0e5-1f0c-448d-98f2-cbcf74556733",
                     "periods": [
                         {
-                            "@type": "geoPeriod",
                             "from": "2021-10-22T09:00:00",
                             "to": "2021-10-22T17:00:00",
                             "frequency": "daily",
                             "count": 1
                         }
                     ]
-                 }
-            ],
-            "alerts": [
-                {
-                    "id" : "2",
-                    "@type": "geoAlert",
-                    "displayName":"",
-                    "description":"",
-                    "tags":[],
-                    "priority":0,                
-                    "relativeTo": "enter",
-                    "actions":[],
-                    "modifiers":[]
-                },
-                {
-                    "id" : "3",
-                    "@type": "geoAlert",
-                    "relativeTo": "exit",
-                    "actions":[],
-                    "modifiers":[]
-                },
-                {
-                    "id" : "4",
-                    "@type": "geoAlert",
-                    "relativeTo": "inside",
-                    "actions":[],
-                    "modifiers":[]
-                },
-                {
-                    "id" : "4",
-                    "@type": "geoAlert",
-                    "relativeTo": "outside",
-                    "actions":[],
-                    "modifiers":[
-                        {
-                            "@type" : "geoDuration",
-                            "value"  : 300,
-                            "unit"   :"s"
-                        }
-                    ]
                 }
-            ]
+			],
+			"alerts":[
+                {
+                    "@type": "Alert",
+					"uid" : "76064c9d-2216-4cb4-8ef7-fd14a183eb58",
+                    "relativeTo": ["entering","exiting","inside","outside" ]
+                }
+			],
+			"primitives" :[
+				{
+					"@type": "Area",
+					"uid" : "5cfb02bf-75de-4f2b-8feb-473a7e26b48d",
+					"displayName":"",
+					"description":"",
+					"shapes":[0]
+					"tags":[],
+					"priority":0
+					"modifiers":[0,1]
+					"alerts":[0]
+				}
+			]
         }
     }
 }
