@@ -1,0 +1,22 @@
+{
+  "@context": {
+    "geojson": "https://purl.org/geojson/vocab#",
+    "geofence": "https://geofencing.blueforest.io/vocab#",
+
+    "@base": "http://geofencing.blueforest.io/fences/",
+    "uid": "@id",
+    "type": "@type",
+    "properties": "geojson:properties",
+    "geofenceExtension": "geofence:geojonExtension",
+    "shapes": {
+      "@container": "@list",
+      "@id": "geofence:shapes"
+    },
+    "primitives": {
+      "@container": "@list",
+      "@id": "geofence:primitives"
+    },
+    "Circle": "geofence:Circle",
+    "Area": "geofence:Area"
+  }
+}

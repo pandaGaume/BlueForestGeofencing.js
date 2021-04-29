@@ -1,0 +1,58 @@
+{
+	"type": "Feature",
+	"geometry": {
+		"type": "Point",
+		"coordinates": [2.5741880846574667, 48.639946000000016]
+	},
+	"properties": {
+		"geofence": {
+			"@id": "d42d7ff3-7012-4fbb-9fea-39fa2265b9a9",
+			"@type": "bf:geofence:1",
+			"@context": "./context",
+			"displayName": "DotVision headquarter Safe Zone",
+			"description": "Set a safe zone against 'bad guys', arround and above DotVision headquarter.",
+			"nodes": [
+				{
+					"displayName": "HeadQuarter.",
+					"ishape": 0
+				}
+			],
+			"shapes": [
+				{
+					"type": "Circle",
+					"igeometry": 0,
+					"radius": 500,
+					"Elevation": { "max": 1000 }
+				}
+			],
+			"alerts": [
+				{
+					"displayName":"Bad guy's alerts",
+					"relativeTo": [ "entering", "exiting", "inside", "outside", "above" ]
+				}
+			],
+			"modifiers": [
+				{
+					"type": "Filter",
+					"displayName":"Bad guy's filter",
+					"description":"data=>data.Sample.Tags.Any(t=>t == 'bad guys')",
+					"logic": {"some":["var":"Sample.Tags"},{"==":[{"var":""},"bad guys"]}]}
+				}
+			],
+
+			"primitives": [
+				{
+					"displayName":"Safe zone",
+					"type": "Area",
+					"inodes": [ 0 ],
+					"ialerts": [ 0 ],
+					"pre-modifiers":[ 0 ]
+				}
+			]
+		},
+		"style": {
+              "color": "#FF0000",
+              "width": 3
+        }
+	}
+}
