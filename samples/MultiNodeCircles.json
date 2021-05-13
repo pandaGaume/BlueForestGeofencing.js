@@ -1,97 +1,102 @@
 {
- "type": "Feature",
- "geometry": {
-  "type": "Point",
-  "coordinates": [ 0, 0 ]
- },
- "properties": {
-  "geofence": {
-   "@id": "d42d7ff3-7012-4fbb-9fea-39fa2265b9a2",
-   "@type": "bf:geofence:1",
-   "@context": "./context",
-   "displayName": "DotVision Safe Zones",
-   "description": "Set a nightly safe zone against 'bad guys' and some monsters, arround and above DotVision locations.",
-   "shapes": [
-    {
-     "type": "Circle",
-     "igeometry": 0,
-     "radius": 500,
-     "Elevation": { "to": 1000 }
-    }
-   ],
-   "nodes": [
-    {
-     "displayName": "HeadQuarter.",
-     "translation": [ 2.5741880846574667, 48.639946000000016 ],
-     "ishape": 0
-    },
-    {
-     "displayName": "Hawaii.",
-     "translation": [ -157.86073811843235, 21.310663208579705 ],
-     "ishape": 0
-    }
-   ],
-   "modifiers": [
-    {
-     "type": "Predicate",
-     "displayName": "Bad guy's filter",
-     "description": "Watch only 'bad guys' or 'kaiju')",
-     "logic": {
-      "any": [
-       { "var": "Sample.Tags" },
-       {
-        "or": [
-         {
-          "==": [
-           { "var": "" },
-           "bad guys"
-          ]
-         },
-         {
-          "==": [
-           { "var": "" },
-           "kaiju"
-          ]
-         }
-        ]
-       }
-      ]
-     }
-    },
-    {
-     "type": "Calendar",
-     "displayName": "Night",
-     "description": "Every day from 8pm to 8am D+1",
-     "expired": "2022-01-01T00:00:00",
-     "validityPeriod": [
-      {
-       "startTime": "2021-05-01T20:00:00",
-       "endTime": "2021-05-02T08:00:00",
-       "recurrenceType": "Daily"
-      }
-     ]
-    }
-   ],
-   "alerts": [
-    {
-     "displayName": "Bad guy's alerts",
-     "relativeTo": [ "entering", "exiting", "inside", "outside", "above" ],
-	 "threshold" : 5
-    }
-   ],
-   "primitives": [
-    {
-     "type": "Area",
-     "displayName": "Safe zone",
-     "inodes": [ 0, 1 ],
-     "ialerts": [ 0 ],
-     "pre-imodifiers": [ 0, 1 ]
-    }
-   ]
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [ 0.0, 0.0 ]
   },
-  "style": {
-   "color": "#FF0000",
-   "width": 3
+  "properties": {
+    "geofence": {
+      "@type": "Geofence",
+      "@id": "d42d7ff3-7012-4fbb-9fea-39fa2265b9a2",
+      "@context": "./context",
+      "displayName": "DotVision Safe Zones",
+      "description": "Set a nightly safe zone against 'bad guys' and some monsters, arround and above DotVision locations.",
+      "shapes": [
+        {
+          "type": "Circle",
+          "igeometry": 0,
+          "radius": 500,
+          "elevation": { "to": 1000 }
+        }
+      ],
+      "nodes": [
+        {
+          "type": "Node",
+          "@id": "d42d7ff3-7012-4fbb-9fea-39fa2265b9a3",
+          "displayName": "HeadQuarter.",
+          "translation": [ 2.5741880846574667, 48.639946000000016 ],
+          "ishape": 0
+        },
+        {
+          "type": "Node",
+          "@id": "d42d7ff3-7012-4fbb-9fea-39fa2265b9a4",
+          "displayName": "Hawaii.",
+          "translation": [ -157.86073811843235, 21.310663208579705 ],
+          "ishape": 0
+        }
+      ],
+      "modifiers": [
+        {
+          "type": "Predicate",
+          "displayName": "Bad guy's filter",
+          "description": "Watch only 'bad guys' or 'kaiju')",
+          "logic": {
+            "any": [
+              { "var": "Input.Tags" },
+              {
+                "or": [
+                  {
+                    "==": [
+                      { "var": "" },
+                      "bad guys"
+                    ]
+                  },
+                  {
+                    "==": [
+                      { "var": "" },
+                      "kaiju"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "Calendar",
+          "displayName": "Night",
+          "description": "Every day from 8pm to 8am D+1",
+          "expired": "2022-01-01T00:00:00",
+          "validityPeriod": [
+            {
+              "startTime": "2021-05-01T20:00:00",
+              "endTime": "2021-05-02T08:00:00",
+              "recurrenceType": "Daily"
+            }
+          ]
+        }
+      ],
+      "alerts": [
+        {
+          "type": "Alert",
+          "displayName": "Bad guy's alerts",
+          "relativeTo": [ "approaching", "leaving", "entering", "exiting", "inside", "outside", "above" ]
+        }
+      ],
+      "primitives": [
+        {
+          "type": "Area",
+          "displayName": "Safe zone",
+          "inodes": [ 0, 1 ],
+          "ialerts": [ 0 ],
+          "pre-imodifiers": [ 0, 1 ]
+        }
+      ],
+      "iroots": [ 0, 1 ]
+    },
+    "style": {
+      "color": "#FF0000",
+      "width": 3
+    }
   }
- }
 }
