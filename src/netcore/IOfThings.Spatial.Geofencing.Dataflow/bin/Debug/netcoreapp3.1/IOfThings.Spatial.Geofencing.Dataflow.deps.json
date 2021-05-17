@@ -1,0 +1,117 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "IOfThings.Spatial.Geofencing.Dataflow/1.0.0": {
+        "dependencies": {
+          "IOfThings.Spatial": "1.0.0",
+          "IOfThings.Spatial.Geofencing.Core": "1.0.0",
+          "IOfThings.Spatial.Geography": "1.0.0",
+          "IOfThings.Telemetry.Sequencer": "1.0.0"
+        },
+        "runtime": {
+          "IOfThings.Spatial.Geofencing.Dataflow.dll": {}
+        }
+      },
+      "Microsoft.Extensions.ObjectPool/5.0.6": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.ObjectPool.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.621.22305"
+          }
+        }
+      },
+      "IOfThings.Spatial/1.0.0": {
+        "runtime": {
+          "IOfThings.Spatial.dll": {}
+        }
+      },
+      "IOfThings.Spatial.Geofencing.Core/1.0.0": {
+        "dependencies": {
+          "IOfThings.Spatial": "1.0.0",
+          "IOfThings.Spatial.Geography": "1.0.0",
+          "IOfThings.Spatial.Text.GeoJson": "1.0.0",
+          "IOfThings.Telemetry": "1.0.0",
+          "Microsoft.Extensions.ObjectPool": "5.0.6"
+        },
+        "runtime": {
+          "IOfThings.Spatial.Geofencing.Core.dll": {}
+        }
+      },
+      "IOfThings.Spatial.Geography/1.0.0": {
+        "dependencies": {
+          "IOfThings.Spatial": "1.0.0"
+        },
+        "runtime": {
+          "IOfThings.Spatial.Geography.dll": {}
+        }
+      },
+      "IOfThings.Spatial.Text.GeoJson/1.0.0": {
+        "runtime": {
+          "IOfThings.Spatial.Text.GeoJson.dll": {}
+        }
+      },
+      "IOfThings.Telemetry/1.0.0": {
+        "dependencies": {
+          "IOfThings.Spatial.Geography": "1.0.0"
+        },
+        "runtime": {
+          "IOfThings.Telemetry.dll": {}
+        }
+      },
+      "IOfThings.Telemetry.Sequencer/1.0.0": {
+        "runtime": {
+          "IOfThings.Telemetry.Sequencer.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "IOfThings.Spatial.Geofencing.Dataflow/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.Extensions.ObjectPool/5.0.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-27GHEFz1SIXfsF/ttEnhSjmnueOmiu/D+sfEea2e7NEba05/C6gjeNreTUf7OkuksG/MCWLi8K1PdweocpjeZw==",
+      "path": "microsoft.extensions.objectpool/5.0.6",
+      "hashPath": "microsoft.extensions.objectpool.5.0.6.nupkg.sha512"
+    },
+    "IOfThings.Spatial/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "IOfThings.Spatial.Geofencing.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "IOfThings.Spatial.Geography/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "IOfThings.Spatial.Text.GeoJson/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "IOfThings.Telemetry/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "IOfThings.Telemetry.Sequencer/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

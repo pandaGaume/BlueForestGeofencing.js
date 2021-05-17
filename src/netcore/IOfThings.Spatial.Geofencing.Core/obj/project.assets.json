@@ -1,0 +1,188 @@
+{
+  "version": 3,
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "Microsoft.Extensions.ObjectPool/5.0.6": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.ObjectPool.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.ObjectPool.dll": {}
+        }
+      },
+      "IOfThings.Spatial/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "compile": {
+          "bin/placeholder/IOfThings.Spatial.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/IOfThings.Spatial.dll": {}
+        }
+      },
+      "IOfThings.Spatial.Geography/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "dependencies": {
+          "IOfThings.Spatial": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/IOfThings.Spatial.Geography.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/IOfThings.Spatial.Geography.dll": {}
+        }
+      },
+      "IOfThings.Spatial.Text.GeoJson/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "compile": {
+          "bin/placeholder/IOfThings.Spatial.Text.GeoJson.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/IOfThings.Spatial.Text.GeoJson.dll": {}
+        }
+      },
+      "IOfThings.Telemetry/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "dependencies": {
+          "IOfThings.Spatial.Geography": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/IOfThings.Telemetry.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/IOfThings.Telemetry.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Microsoft.Extensions.ObjectPool/5.0.6": {
+      "sha512": "27GHEFz1SIXfsF/ttEnhSjmnueOmiu/D+sfEea2e7NEba05/C6gjeNreTUf7OkuksG/MCWLi8K1PdweocpjeZw==",
+      "type": "package",
+      "path": "microsoft.extensions.objectpool/5.0.6",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/Microsoft.Extensions.ObjectPool.dll",
+        "lib/net461/Microsoft.Extensions.ObjectPool.xml",
+        "lib/net5.0/Microsoft.Extensions.ObjectPool.dll",
+        "lib/net5.0/Microsoft.Extensions.ObjectPool.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.ObjectPool.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.ObjectPool.xml",
+        "microsoft.extensions.objectpool.5.0.6.nupkg.sha512",
+        "microsoft.extensions.objectpool.nuspec"
+      ]
+    },
+    "IOfThings.Spatial/1.0.0": {
+      "type": "project",
+      "path": "../../../../DotVision.Motion.V2.Gateway/IOfThings.Spatial.Geometry/IOfThings.Spatial.csproj",
+      "msbuildProject": "../../../../DotVision.Motion.V2.Gateway/IOfThings.Spatial.Geometry/IOfThings.Spatial.csproj"
+    },
+    "IOfThings.Spatial.Geography/1.0.0": {
+      "type": "project",
+      "path": "../../../../DotVision.Motion.V2.Gateway/IOfThings.Spatial.Geography/IOfThings.Spatial.Geography.csproj",
+      "msbuildProject": "../../../../DotVision.Motion.V2.Gateway/IOfThings.Spatial.Geography/IOfThings.Spatial.Geography.csproj"
+    },
+    "IOfThings.Spatial.Text.GeoJson/1.0.0": {
+      "type": "project",
+      "path": "../../../../GeoJsonSerializer/src/IOfThings.Spatial.Text.GeoJson/IOfThings.Spatial.Text.GeoJson/IOfThings.Spatial.Text.GeoJson.csproj",
+      "msbuildProject": "../../../../GeoJsonSerializer/src/IOfThings.Spatial.Text.GeoJson/IOfThings.Spatial.Text.GeoJson/IOfThings.Spatial.Text.GeoJson.csproj"
+    },
+    "IOfThings.Telemetry/1.0.0": {
+      "type": "project",
+      "path": "../../../../DotVision.Motion.V2.Gateway/IOfThings.Telemetry/IOfThings.Telemetry.csproj",
+      "msbuildProject": "../../../../DotVision.Motion.V2.Gateway/IOfThings.Telemetry/IOfThings.Telemetry.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    ".NETCoreApp,Version=v3.1": [
+      "IOfThings.Spatial >= 1.0.0",
+      "IOfThings.Spatial.Geography >= 1.0.0",
+      "IOfThings.Spatial.Text.GeoJson >= 1.0.0",
+      "IOfThings.Telemetry >= 1.0.0",
+      "Microsoft.Extensions.ObjectPool >= 5.0.6"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\guill\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\guill\\Documents\\Sources\\BlueForestGeofencing.js\\src\\netcore\\IOfThings.Spatial.Geofencing.Core\\IOfThings.Spatial.Geofencing.Core.csproj",
+      "projectName": "IOfThings.Spatial.Geofencing.Core",
+      "projectPath": "C:\\Users\\guill\\Documents\\Sources\\BlueForestGeofencing.js\\src\\netcore\\IOfThings.Spatial.Geofencing.Core\\IOfThings.Spatial.Geofencing.Core.csproj",
+      "packagesPath": "C:\\Users\\guill\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\guill\\Documents\\Sources\\BlueForestGeofencing.js\\src\\netcore\\IOfThings.Spatial.Geofencing.Core\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\guill\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "netcoreapp3.1"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
+          "projectReferences": {
+            "C:\\Users\\guill\\Documents\\Sources\\DotVision.Motion.V2.Gateway\\IOfThings.Spatial.Geography\\IOfThings.Spatial.Geography.csproj": {
+              "projectPath": "C:\\Users\\guill\\Documents\\Sources\\DotVision.Motion.V2.Gateway\\IOfThings.Spatial.Geography\\IOfThings.Spatial.Geography.csproj"
+            },
+            "C:\\Users\\guill\\Documents\\Sources\\DotVision.Motion.V2.Gateway\\IOfThings.Spatial.Geometry\\IOfThings.Spatial.csproj": {
+              "projectPath": "C:\\Users\\guill\\Documents\\Sources\\DotVision.Motion.V2.Gateway\\IOfThings.Spatial.Geometry\\IOfThings.Spatial.csproj"
+            },
+            "C:\\Users\\guill\\Documents\\Sources\\DotVision.Motion.V2.Gateway\\IOfThings.Telemetry\\IOfThings.Telemetry.csproj": {
+              "projectPath": "C:\\Users\\guill\\Documents\\Sources\\DotVision.Motion.V2.Gateway\\IOfThings.Telemetry\\IOfThings.Telemetry.csproj"
+            },
+            "C:\\Users\\guill\\Documents\\Sources\\GeoJsonSerializer\\src\\IOfThings.Spatial.Text.GeoJson\\IOfThings.Spatial.Text.GeoJson\\IOfThings.Spatial.Text.GeoJson.csproj": {
+              "projectPath": "C:\\Users\\guill\\Documents\\Sources\\GeoJsonSerializer\\src\\IOfThings.Spatial.Text.GeoJson\\IOfThings.Spatial.Text.GeoJson\\IOfThings.Spatial.Text.GeoJson.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "netcoreapp3.1": {
+        "targetAlias": "netcoreapp3.1",
+        "dependencies": {
+          "Microsoft.Extensions.ObjectPool": {
+            "target": "Package",
+            "version": "[5.0.6, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.203\\RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
