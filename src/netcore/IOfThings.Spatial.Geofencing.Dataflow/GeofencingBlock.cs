@@ -8,19 +8,38 @@ using System.Threading.Tasks.Dataflow;
 
 namespace IOfThings.Spatial.Geofencing
 {
+    public class GeofencingBlockOptions
+    {
+        public readonly static GeofencingBlockOptions Default = new GeofencingBlockOptions();
+
+        internal const int defaultMaxDepth = 16;
+        internal const int defaultMaxCount = 16;
+        internal const SplitMode defaultSplitMode = SplitMode.Octree;
+
+        Ellipsoid _e = Ellipsoid.WGS84;
+        int _imd = defaultMaxDepth;
+        int _imc = defaultMaxCount;
+        SplitMode _ism = defaultSplitMode;
+
+        public Ellipsoid Ellipsoid { get => _e; set => _e = value; }
+        public int IndexMaxDepth { get => _imd; set => _imd = value; }
+        public int IndexMaxCount { get => _imc; set => _imc = value; }
+        public SplitMode IndexSplitMode { get => _ism; set => _ism = value; }
+    }
+
     public class GeofencingBlock : IPropagatorBlock<IEnumerable<ISegment<IGeofencingSample>>, IEnumerable<IGeofencingEvent>>, 
                                    IReceivableSourceBlock<IEnumerable<IGeofencingEvent>>
     {
         private readonly SpatialIndex<INode> _index;
         private readonly ENUSystem _enu;
         private readonly IList<IGeofence> _list;
-        // The target part of the block.
         private readonly ITargetBlock<IEnumerable<ISegment<IGeofencingSample>>> _target;
-        // The source part of the block.
         private readonly IReceivableSourceBlock<IEnumerable<IGeofencingEvent>> _source;
  
-        public GeofencingBlock(IEnumerable<IGeofence> geofences, Ellipsoid ellipsoid)
+        public GeofencingBlock(IEnumerable<IGeofence> geofences, GeofencingBlockOptions options = null)
         {
+            var o = options ?? GeofencingBlockOptions.Default;
+
             var source = new BufferBlock<IEnumerable<IGeofencingEvent>>();
             var target = new ActionBlock<IEnumerable<ISegment<IGeofencingSample>>>(
                 messageValue =>
@@ -44,10 +63,10 @@ namespace IOfThings.Spatial.Geofencing
             _source = source;
 
             _list = geofences.ToList();
-            _enu = _list.DefineGeodeticSystem(ellipsoid);
+            _enu = _list.DefineGeodeticSystem(o.Ellipsoid);
             var env = _list.Select(g => g.BoundingEnvelope).Aggregate();
             var box = env.ToENU(_enu);
-            _index = new SpatialIndex<INode>(box, 16, 16, SplitMode.Octree);
+            _index = new SpatialIndex<INode>(box, o.IndexMaxDepth, o.IndexMaxCount, o.IndexSplitMode);
             _index.AddRange(_list.SelectMany(g => g.Nodes));
         }
         
