@@ -7,7 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\DotVision.Motion.V2.Gateway\IOfThings.Spatial.Geography\IOfThings.Spatial.Geography.csproj" />
     <ProjectReference Include="..\..\..\..\DotVision.Motion.V2.Gateway\IOfThings.Spatial.Geometry\IOfThings.Spatial.csproj" />
-    <ProjectReference Include="..\..\..\..\Sequencer\IOfThings.Telemetry.Sequencer\IOfThings.Telemetry.Sequencer\IOfThings.Telemetry.Sequencer.csproj" />
+    <ProjectReference Include="..\..\..\..\Sequencer\IOfThings.Telemetry.Sequencer\IOfThings.Telemetry.Sequencer\IOfThings.Sequencer.csproj" />
     <ProjectReference Include="..\IOfThings.Spatial.Geofencing.Core\IOfThings.Spatial.Geofencing.Core.csproj" />
   </ItemGroup>
 
