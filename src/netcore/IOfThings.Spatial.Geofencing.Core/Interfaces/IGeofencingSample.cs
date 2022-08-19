@@ -1,5 +1,6 @@
 ﻿using IOfThings.Spatial.Geography;
 using IOfThings.Telemetry;
+using IOfThings.Telemetry.Dataflow;
 
 namespace IOfThings.Spatial.Geofencing
 {
