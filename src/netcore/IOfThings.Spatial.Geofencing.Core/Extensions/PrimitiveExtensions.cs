@@ -13,7 +13,6 @@ namespace IOfThings.Spatial.Geofencing
             i.Geofence = g;
             i.TriggerMask = i.BuildTriggerMask();
         }
-
         public static IEnumerable<IAlert> GetAlerts(this IPrimitive p)
         {
             if (p.IAlerts == null || p.Geofence == null || p.Geofence.Alerts == null) yield break;
@@ -25,7 +24,6 @@ namespace IOfThings.Spatial.Geofencing
                 }
             }
         }
-
         public static int BuildTriggerMask(this IPrimitive p)
         {
             int m = 0x00000000;
@@ -43,7 +41,6 @@ namespace IOfThings.Spatial.Geofencing
             }
             return false;
         }
-
         public static IEnumerable<IGeofencingNode> GetNodes(this IPrimitive p, Func<IGeofencingNode, bool> predicate = null)
         {
             if (p?.Geofence != null && p?.INodes != null)
@@ -57,7 +54,6 @@ namespace IOfThings.Spatial.Geofencing
             }
             return Enumerable.Empty<IGeofencingNode>();
         }
-
         internal static IConditionEvent[] CheckInternal(this IPrimitive primitive, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options = null)
         {
             if (primitive.GetPreModifiers<IModifier>().ApplyAll(segment, primitive))
@@ -65,7 +61,7 @@ namespace IOfThings.Spatial.Geofencing
                 var list = new List<IConditionEvent>(1);
                 foreach (var node in primitive.GetNodes())
                 {
-                    foreach (var alarm in node.CheckInternal(primitive, segment))
+                    foreach (var alarm in node.CheckInternal(primitive, segment, options?.EventFactory?? GeofencingEventFactory.Shared))
                     {
                         if (options?.MessageFactory != null)
                         {
@@ -85,7 +81,7 @@ namespace IOfThings.Spatial.Geofencing
                 var list = new List<IConditionEvent>(1);
                 foreach (var node in primitive.GetNodes())
                 {
-                    foreach (var alarm in node.CheckInternal(primitive, sample))
+                    foreach (var alarm in node.CheckInternal(primitive, sample, options?.EventFactory ?? GeofencingEventFactory.Shared))
                     {
                         if(options?.MessageFactory != null)
                         {

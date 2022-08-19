@@ -20,8 +20,8 @@ namespace IOfThings.Spatial.Geofencing
         IRadius Radius { get; set; }
         IValueRange<double> Elevation { get; set; }
         int GeometryIndex { get; set; }
-        IEnumerable<IConditionEvent> CheckImpl(IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> sample);
-        IEnumerable<IConditionEvent> CheckImpl(IPrimitive primitive, IGeofencingNode node, IGeofencingSample sample);
+        IEnumerable<IConditionEvent> CheckImpl(IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> sample, IGeofencingEventFactory eventFactory);
+        IEnumerable<IConditionEvent> CheckImpl(IPrimitive primitive, IGeofencingNode node, IGeofencingSample sample, IGeofencingEventFactory eventFactory);
         Vector3? Anchor { get; set; }
     }
 }

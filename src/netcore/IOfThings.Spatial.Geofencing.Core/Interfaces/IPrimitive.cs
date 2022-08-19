@@ -2,7 +2,7 @@
 {
     public enum PrimitiveType
     {
-        Area, 
+        Zone, 
         Fence, 
         Path, 
         ControlPoint

@@ -20,10 +20,7 @@ namespace IOfThings.Spatial.Geofencing
                 }
             }
         }
-        public static IEnumerable<IGeofencingNode> Descendants(this IEnumerable<IGeofencingNode> nodes, Func<IGeofencingNode, Boolean> predicate = null)
-        {
-            return nodes.SelectMany(n => n.Descendants(predicate));
-        }
+        public static IEnumerable<IGeofencingNode> Descendants(this IEnumerable<IGeofencingNode> nodes, Func<IGeofencingNode, Boolean> predicate = null)=>nodes.SelectMany(n => n.Descendants(predicate));
         public static int Index(this IGeofencingNode node)
         {
             var g = node.Geofence;
@@ -40,7 +37,7 @@ namespace IOfThings.Spatial.Geofencing
             return Enumerable.Empty<IPrimitive>();
         }
         public static IEnumerable<IPrimitive> Primitives(this IEnumerable<IGeofencingNode> nodes) => nodes.SelectMany(n => Primitives(n)).Distinct();
-        public static IEnumerable<IConditionEvent> Check(this IGeofencingNode node, IPrimitive primitive, ISegment<IGeofencingSample> sample)
+        public static IEnumerable<IConditionEvent> Check(this IGeofencingNode node, IPrimitive primitive, ISegment<IGeofencingSample> sample, IGeofencingEventFactory eventFactory)
         {
             // sort case where unconsistent segment
             if (sample.First == default(IGeofencingSample))
@@ -49,17 +46,17 @@ namespace IOfThings.Spatial.Geofencing
                 {
                     return Enumerable.Empty<IConditionEvent>();
                 }
-                return CheckInternal(node, primitive, sample.Second);
+                return CheckInternal(node, primitive, sample.Second, eventFactory);
             }
 
             if (sample.Second == default(IGeofencingSample) || sample.First == sample.Second)
             {
-                return CheckInternal(node, primitive, sample.First);
+                return CheckInternal(node, primitive, sample.First, eventFactory);
             }
 
-            return CheckInternal(node, primitive, sample);
+            return CheckInternal(node, primitive, sample, eventFactory);
         }
-        public static IEnumerable<IConditionEvent> Check(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, ISegment<IGeofencingSample> sample)
+        public static IEnumerable<IConditionEvent> Check(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, ISegment<IGeofencingSample> sample, IGeofencingEventFactory eventFactory)
         {
             // sort case where unconsistent segment
             if (sample.First == default(IGeofencingSample))
@@ -68,17 +65,17 @@ namespace IOfThings.Spatial.Geofencing
                 {
                     return Enumerable.Empty<IConditionEvent>();
                 }
-                return CheckInternal(nodes, primitive, sample.Second);
+                return CheckInternal(nodes, primitive, sample.Second, eventFactory);
             }
 
             if (sample.Second == default(IGeofencingSample) || sample.First == sample.Second)
             {
-                return CheckInternal(nodes, primitive, sample.First);
+                return CheckInternal(nodes, primitive, sample.First, eventFactory);
             }
 
-            return CheckInternal(nodes, primitive, sample);
+            return CheckInternal(nodes, primitive, sample, eventFactory);
         }
-        internal static IEnumerable<IConditionEvent> CheckInternal(this IGeofencingNode node, IPrimitive primitive, ISegment<IGeofencingSample> sample)
+        internal static IEnumerable<IConditionEvent> CheckInternal(this IGeofencingNode node, IPrimitive primitive, ISegment<IGeofencingSample> sample, IGeofencingEventFactory eventFactory)
         {
             try
             {
@@ -90,7 +87,7 @@ namespace IOfThings.Spatial.Geofencing
                     {
                         if (shape.GetPreModifiers<IModifier>().ApplyAll(sample, shape, node))
                         {
-                            return shape.CheckImpl(primitive, node, sample);
+                            return shape.CheckImpl(primitive, node, sample, eventFactory);
                         }
                     }
                     finally
@@ -105,8 +102,8 @@ namespace IOfThings.Spatial.Geofencing
             }
             return Enumerable.Empty<IConditionEvent>();
         }
-        internal static IEnumerable<IConditionEvent> CheckInternal(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, ISegment<IGeofencingSample> sample) => nodes.SelectMany(n => CheckInternal(n, primitive, sample));
-        internal static IEnumerable<IConditionEvent> CheckInternal(this IGeofencingNode node, IPrimitive primitive, IGeofencingSample sample)
+        internal static IEnumerable<IConditionEvent> CheckInternal(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, ISegment<IGeofencingSample> sample, IGeofencingEventFactory eventFactory) => nodes.SelectMany(n => CheckInternal(n, primitive, sample, eventFactory));
+        internal static IEnumerable<IConditionEvent> CheckInternal(this IGeofencingNode node, IPrimitive primitive, IGeofencingSample sample, IGeofencingEventFactory eventFactory)
         {
             try
             {
@@ -118,7 +115,7 @@ namespace IOfThings.Spatial.Geofencing
                     {
                         if (shape.GetPreModifiers<IModifier>().ApplyAll(sample, shape, node))
                         {
-                            return shape.CheckImpl(primitive, node, sample);
+                            return shape.CheckImpl(primitive, node, sample,eventFactory);
                         }
                     }
                     finally
@@ -133,7 +130,7 @@ namespace IOfThings.Spatial.Geofencing
             }
             return Enumerable.Empty<IConditionEvent>();
         }
-        internal static IEnumerable<IConditionEvent> CheckInternal(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, IGeofencingSample sample) => nodes.SelectMany(n=>CheckInternal(n,primitive,sample));
+        internal static IEnumerable<IConditionEvent> CheckInternal(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, IGeofencingSample sample, IGeofencingEventFactory eventFactory) => nodes.SelectMany(n=>CheckInternal(n,primitive,sample, eventFactory));
         public static IGeofencingShape GetShape(this IGeofencingNode n)
         {
             var shapes = n.Geofence?.Shapes;
@@ -222,6 +219,28 @@ namespace IOfThings.Spatial.Geofencing
                     c.Consume();
                 }
             }
+        }
+        public static IEnvelope BuildEnvelope(this IGeofencingNode node)
+        {
+            var s = node.GetShape();
+            IEnvelope env = null;
+            if (s != default(IGeofencingShape))
+            {
+                env = s.Envelope;
+                var T = node.WorldTransform;
+                env = (T.IsIdentity) ? env : env.Transform(T);
+            }
+
+            env = env ?? new Envelope();
+            if (node.HasChildren)
+            {
+                foreach (var c in node.Children())
+                {
+                    var e = c.Envelope;
+                    env.AddInPlace(e);
+                }
+            }
+            return env;
         }
     }
 }

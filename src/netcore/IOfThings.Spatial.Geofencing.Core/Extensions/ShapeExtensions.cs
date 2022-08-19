@@ -200,5 +200,6 @@ namespace IOfThings.Spatial.Geofencing
             }
             return null;
         }
+
     }
 }
