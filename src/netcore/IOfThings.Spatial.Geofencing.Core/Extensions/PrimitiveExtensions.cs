@@ -44,7 +44,7 @@ namespace IOfThings.Spatial.Geofencing
             return false;
         }
 
-        public static IEnumerable<IGeofencingTreeNode> GetNodes(this IPrimitive p, Func<IGeofencingTreeNode, bool> predicate = null)
+        public static IEnumerable<IGeofencingNode> GetNodes(this IPrimitive p, Func<IGeofencingNode, bool> predicate = null)
         {
             if (p?.Geofence != null && p?.INodes != null)
             {
@@ -55,7 +55,7 @@ namespace IOfThings.Spatial.Geofencing
                     return predicate != null ? selectedFromIndices.Where(predicate) : selectedFromIndices;
                 }
             }
-            return Enumerable.Empty<IGeofencingTreeNode>();
+            return Enumerable.Empty<IGeofencingNode>();
         }
 
         internal static IConditionEvent[] CheckInternal(this IPrimitive primitive, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options = null)

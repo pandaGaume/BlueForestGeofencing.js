@@ -29,7 +29,7 @@ namespace IOfThings.Spatial.Geofencing
             return _items;
         }
 
-        public static IEnumerable<IGeofencingTreeNode> ActivNodes(this IGeofence geofence)
+        public static IEnumerable<IGeofencingNode> ActivNodes(this IGeofence geofence)
         {
             foreach( var n in RootNodes(geofence).Where(n => !n.Consumed && n.Enabled))
             {
@@ -60,7 +60,7 @@ namespace IOfThings.Spatial.Geofencing
             return default(IGeofencingNode);
         }
 
-        public static IEnumerable<IGeofencingTreeNode> RootNodes(this IGeofence geofence)
+        public static IEnumerable<IGeofencingNode> RootNodes(this IGeofence geofence)
         {
             foreach(var i in geofence.RootIndices)
             {
@@ -96,7 +96,7 @@ namespace IOfThings.Spatial.Geofencing
             return null;
         }
 
-        public static IList<IGeofencingTreeNode> ValidateRoots(this IGeofence geofence, IList<IGeofencingTreeNode> actual)
+        public static IList<IGeofencingNode> ValidateRoots(this IGeofence geofence, IList<IGeofencingNode> actual)
         {
             if( actual == null && geofence.Nodes.Count != 0)
             {
@@ -104,7 +104,7 @@ namespace IOfThings.Spatial.Geofencing
                 {
                     geofence.RootIndices = new int[] { 0 };
                 }
-                IList<IGeofencingTreeNode> roots = new List<IGeofencingTreeNode>(geofence.RootIndices.Length);
+                IList<IGeofencingNode> roots = new List<IGeofencingNode>(geofence.RootIndices.Length);
                 var nodes = geofence.Nodes;
                 for (int i = 0; i != geofence.RootIndices.Length; i++)
                 {

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 namespace IOfThings.Spatial.Geofencing
 {
     [JsonPolymorphicType(Name = "Node")]
-    public interface IGeofencingTreeNode : IGeofencingNode
+    public interface ITreeItem 
     {
-        IGeofencingTreeNode Parent { get; }
-        IEnumerable<IGeofencingTreeNode> Children(Func<IGeofencingTreeNode, bool> predicate = null);
+        IGeofencingNode Parent { get; }
+        IEnumerable<IGeofencingNode> Children(Func<IGeofencingNode, bool> predicate = null);
         bool HasChildren { get; }
         int CountChildren { get; }
     }

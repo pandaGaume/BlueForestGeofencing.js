@@ -1,6 +1,7 @@
 ﻿using IOfThings.Spatial.Geography;
 using IOfThings.Telemetry;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace IOfThings.Spatial.Geofencing
 {
@@ -21,5 +22,6 @@ namespace IOfThings.Spatial.Geofencing
         int GeometryIndex { get; set; }
         IEnumerable<IConditionEvent> CheckImpl(IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> sample);
         IEnumerable<IConditionEvent> CheckImpl(IPrimitive primitive, IGeofencingNode node, IGeofencingSample sample);
+        Vector3? Anchor { get; set; }
     }
 }

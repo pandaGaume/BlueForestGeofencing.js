@@ -9,7 +9,7 @@ namespace IOfThings.Spatial.Geofencing
 {
     public static class NodeExtensions
     {
-        public static IEnumerable<IGeofencingTreeNode> Descendants(this IGeofencingTreeNode n, Func<IGeofencingTreeNode, Boolean> predicate = null)
+        public static IEnumerable<IGeofencingNode> Descendants(this IGeofencingNode n, Func<IGeofencingNode, Boolean> predicate = null)
         {
             foreach (var c in n.Children(predicate))
             {
@@ -20,16 +20,16 @@ namespace IOfThings.Spatial.Geofencing
                 }
             }
         }
-        public static IEnumerable<IGeofencingTreeNode> Descendants(this IEnumerable<IGeofencingTreeNode> nodes, Func<IGeofencingTreeNode, Boolean> predicate = null)
+        public static IEnumerable<IGeofencingNode> Descendants(this IEnumerable<IGeofencingNode> nodes, Func<IGeofencingNode, Boolean> predicate = null)
         {
             return nodes.SelectMany(n => n.Descendants(predicate));
         }
-        public static int Index(this IGeofencingTreeNode node)
+        public static int Index(this IGeofencingNode node)
         {
             var g = node.Geofence;
             return g != default(IGeofence)? g.Nodes.IndexOf(node) : -1;
         }
-        public static IEnumerable<IPrimitive> Primitives(this IGeofencingTreeNode node)
+        public static IEnumerable<IPrimitive> Primitives(this IGeofencingNode node)
         {
             var g = node.Geofence;
             var i = Index(node);
@@ -39,7 +39,7 @@ namespace IOfThings.Spatial.Geofencing
             }
             return Enumerable.Empty<IPrimitive>();
         }
-        public static IEnumerable<IPrimitive> Primitives(this IEnumerable<IGeofencingTreeNode> nodes) => nodes.SelectMany(n => Primitives(n)).Distinct();
+        public static IEnumerable<IPrimitive> Primitives(this IEnumerable<IGeofencingNode> nodes) => nodes.SelectMany(n => Primitives(n)).Distinct();
         public static IEnumerable<IConditionEvent> Check(this IGeofencingNode node, IPrimitive primitive, ISegment<IGeofencingSample> sample)
         {
             // sort case where unconsistent segment
@@ -105,9 +105,7 @@ namespace IOfThings.Spatial.Geofencing
             }
             return Enumerable.Empty<IConditionEvent>();
         }
-
         internal static IEnumerable<IConditionEvent> CheckInternal(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, ISegment<IGeofencingSample> sample) => nodes.SelectMany(n => CheckInternal(n, primitive, sample));
-
         internal static IEnumerable<IConditionEvent> CheckInternal(this IGeofencingNode node, IPrimitive primitive, IGeofencingSample sample)
         {
             try
@@ -136,7 +134,6 @@ namespace IOfThings.Spatial.Geofencing
             return Enumerable.Empty<IConditionEvent>();
         }
         internal static IEnumerable<IConditionEvent> CheckInternal(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, IGeofencingSample sample) => nodes.SelectMany(n=>CheckInternal(n,primitive,sample));
-
         public static IGeofencingShape GetShape(this IGeofencingNode n)
         {
             var shapes = n.Geofence?.Shapes;
@@ -148,32 +145,44 @@ namespace IOfThings.Spatial.Geofencing
         }
         public static Matrix4x4 BakeLocalTransform(this IGeofencingNode n)
         {
+            // fast track
+            if (n.Scale == Vector3.One && n.Rotation.IsIdentity)
+            {
+                return n.Translation == Vector3.Zero ? Matrix4x4.Identity : Matrix4x4.CreateTranslation(n.Translation);
+            }
+            // compose the matrix.
             var s = Matrix4x4.CreateScale(n.Scale);
             var r = Matrix4x4.CreateFromQuaternion(n.Rotation);
             var t = Matrix4x4.CreateTranslation(n.Translation);
-            if ( s.IsIdentity && r.IsIdentity)
+            var pivot = n.GetPivot();
+            if (pivot != null &&  pivot.Value != Vector3.Zero)
             {
-                return t;
+                var t0 = Matrix4x4.CreateTranslation(-pivot.Value);
+                var t1 = Matrix4x4.CreateTranslation(pivot.Value);
+                return t0 * t * r * s * t1;
             }
-            var env = n.GetShape()?.BuildEnvelope();
-            if (env != null)
-            {
-                var pivot = env.GetCenter(); ;
-                if (pivot != null)
-                {
-                    var pv = new Vector3((float)pivot.Longitude, (float)pivot.Latitude, (float)(pivot.Altitude.HasValue ? pivot.Altitude.Value : 0));
-                    var t0 = Matrix4x4.CreateTranslation(-pv);
-                    var t1 = Matrix4x4.CreateTranslation(pv);
-                    return t0 * t * r * s * t1;
-                }
-            }
-            return s*r*t;
+            return t * r * s;
         }
-        public static Matrix4x4 BakeWorldTransform(this IGeofencingTreeNode n)
+        public static Vector3? GetPivot(this IGeofencingNode n)
         {
-            return n.Parent != null ? n.Parent.WorldTransform * n.LocalTransform : n.LocalTransform ;
+            // we have pivot defined
+            if (n.Pivot.HasValue)
+            {
+                return n.Pivot.Value;
+            }
+            var p = n.GetShape()?.GetPivot();
+            if( p != null)
+            {
+                // apply translation, otherwise the pivot will always centered into original geometry envelope
+                p = p + n.Translation;
+            }
+            return p;
         }
-        public static bool TryGetParent(this IGeofencingTreeNode n, out IGeofencingTreeNode parent)
+        public static Matrix4x4 BakeWorldTransform(this IGeofencingNode n)
+        {
+            return n.Parent != null ? n.LocalTransform * n.Parent.WorldTransform  : n.LocalTransform ;
+        }
+        public static bool TryGetParent(this IGeofencingNode n, out IGeofencingNode parent)
         {
             var i = n.Geofence.Nodes.IndexOf(n);
             parent = default;
@@ -181,7 +190,7 @@ namespace IOfThings.Spatial.Geofencing
             {
                 foreach (var p in n.Geofence.Nodes)
                 {
-                    if (p.ChildrenIndices?.Contains(i)??false)
+                    if (p.IChildren?.Contains(i)??false)
                     {
                         parent = p;
                         return true;
@@ -190,10 +199,9 @@ namespace IOfThings.Spatial.Geofencing
             }
             return false;
         }
-
-        public static void Enable(this IGeofencingTreeNode node) => SetEnable(node, true);
-        public static void Disable(this IGeofencingTreeNode node) => SetEnable(node, false);
-        public static void SetEnable(this IGeofencingTreeNode node, bool e)
+        public static void Enable(this IGeofencingNode node) => SetEnable(node, true);
+        public static void Disable(this IGeofencingNode node) => SetEnable(node, false);
+        public static void SetEnable(this IGeofencingNode node, bool e)
         {
             if (node.Enabled != e)
             {
@@ -204,7 +212,7 @@ namespace IOfThings.Spatial.Geofencing
                 }
             }
         }
-        public static void Consume(this IGeofencingTreeNode node)
+        public static void Consume(this IGeofencingNode node)
         {
             if (!node.Consumed)
             {

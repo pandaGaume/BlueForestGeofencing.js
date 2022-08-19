@@ -27,14 +27,13 @@ namespace IOfThings.Spatial.Geofencing
             }
             return RelativePosition.Unknown;
         }
-
-        public static IEnvelope BuildEnvelope(this IGeofencingShape shape)
+        public static IEnvelope BuildLocalEnvelope(this IGeofencingShape shape)
         {
             if (shape.Geofence == null || shape.Geofence.Geometry == null) return null;
             var geometry = GetGeometry(shape);
             return (geometry.BBox ?? geometry.BuildBBox()).ToEnvelope();
         }
-        public static IEnvelope BuildEnvelopeWithRadius(this IGeofencingShape shape, int centerIndex = 0)
+        public static IEnvelope BuildLocalEnvelopeWithRadius(this IGeofencingShape shape, int centerIndex = 0)
         {
             if (shape.Geofence == null || shape.Geofence.Geometry == null) return null;
 
@@ -100,7 +99,6 @@ namespace IOfThings.Spatial.Geofencing
             if (s != null && s is ENUSystem enu) return enu;
             return new ENUSystem(center, s?.Ellipsoid ?? Ellipsoid.WGS84);
         }
-
         public static IGeoJsonObject GetGeometry(this IGeofencingShape shape)
         {
             if (shape?.Geofence?.Geometry != null)
@@ -122,7 +120,6 @@ namespace IOfThings.Spatial.Geofencing
             }
             return null;
         }
-
         public static ILocation GetLocation(this IGeofencingShape shape, Matrix4x4 transform)
         {
             var geometry = GetGeometry(shape);
@@ -187,6 +184,21 @@ namespace IOfThings.Spatial.Geofencing
                 }
             }
             return default(GeoPath);
+        }
+        public static Vector3? GetPivot(this IGeofencingShape shape)
+        {
+            if (shape.Anchor.HasValue)
+            {
+                return shape.Anchor.Value;
+            }
+            // remember that Shape Envelope are NOT transformed.
+            var env = shape.Envelope;
+            var pivot = env?.GetCenter(); ;
+            if (pivot != null)
+            {
+                return new Vector3((float)pivot.Longitude, (float)pivot.Latitude, (float)(pivot.Altitude.HasValue ? pivot.Altitude.Value : 0));
+            }
+            return null;
         }
     }
 }

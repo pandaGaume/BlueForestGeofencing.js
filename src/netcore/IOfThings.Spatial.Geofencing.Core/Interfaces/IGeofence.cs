@@ -14,7 +14,7 @@ namespace IOfThings.Spatial.Geofencing
         IGeoJsonObject Geometry {get;set;}
         EllipticSystem GeodeticSystem { get; set; }
         int[] RootIndices { get; set; }
-        IList<IGeofencingTreeNode> Nodes { get; }
+        IList<IGeofencingNode> Nodes { get; }
         IList<IGeofencingShape> Shapes { get; }
         IList<IModifier> Modifiers { get; }
         IList<IAlert> Alerts { get; }
