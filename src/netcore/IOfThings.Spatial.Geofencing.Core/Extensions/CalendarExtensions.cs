@@ -18,7 +18,6 @@ namespace IOfThings.Spatial.Geofencing
             }
             return null;
         }
-
         public static bool IsIn(this ICalendar calendar, DateTime timestamp)
         {
             if (calendar.Expired(timestamp))
@@ -60,7 +59,6 @@ namespace IOfThings.Spatial.Geofencing
         public static bool Intersect(this IPeriod p, IValueRange<DateTime> range) => p.IsValid(range);
         public static bool Expired(this ICalendar calendar, DateTime timestamp) => calendar.AbsoluteExpiration != null && calendar.AbsoluteExpiration < timestamp;
         public static bool Expired(this ICalendar calendar) => calendar.AbsoluteExpiration != null && calendar.AbsoluteExpiration < DateTime.UtcNow;
-
         public static Period Trim(this Period p, IValueRange<DateTime> range)
         {
             return range.Intersect(p)? new Period(p.From < range.From ? range.From : p.From, p.To > range.To ? range.To : p.To) : null;
@@ -75,7 +73,6 @@ namespace IOfThings.Spatial.Geofencing
                     yield return trimmed;
                 }
             }
-
         }
     }
 }

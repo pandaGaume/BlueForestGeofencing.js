@@ -17,7 +17,6 @@ namespace IOfThings.Spatial.Geofencing
             geofence.Nodes.BindGeofence(geofence);
             return geofence;
         }
-
         public static IEnumerable<IGeofencingItem> Items(this IGeofence geofence)
         {
             List<IGeofencingItem> _items = new List<IGeofencingItem>();
@@ -28,8 +27,7 @@ namespace IOfThings.Spatial.Geofencing
             if (geofence.Alerts != null) _items.AddRange(geofence.Alerts);
             return _items;
         }
-
-        public static IEnumerable<IGeofencingNode> ActivNodes(this IGeofence geofence)
+        public static IEnumerable<IGeofencingNode> GetActivNodes(this IGeofence geofence)
         {
             foreach( var n in RootNodes(geofence).Where(n => !n.Consumed && n.Enabled))
             {
@@ -41,7 +39,6 @@ namespace IOfThings.Spatial.Geofencing
             }
             yield break;
         }
-
         public static IGeofencingNode SearchNodes(this IEnumerable<IGeofence> geofences, string id) => geofences.Select(g=>g.SearchNodes(id)).FirstOrDefault();
         public static IGeofencingNode SearchNodes(this IGeofence geofence, string id)
         {
@@ -59,7 +56,6 @@ namespace IOfThings.Spatial.Geofencing
             }
             return default(IGeofencingNode);
         }
-
         public static IEnumerable<IGeofencingNode> RootNodes(this IGeofence geofence)
         {
             foreach(var i in geofence.RootIndices)
@@ -70,7 +66,6 @@ namespace IOfThings.Spatial.Geofencing
                 }
             }
         }
-
         public static ENUSystem UpdateGeodeticSystem(this IEnumerable<IGeofence> geofences, Ellipsoid ellipsoid)
         {
             var system = new EllipticSystem(ellipsoid);
@@ -95,10 +90,9 @@ namespace IOfThings.Spatial.Geofencing
             }
             return null;
         }
-
         public static IList<IGeofencingNode> ValidateRoots(this IGeofence geofence, IList<IGeofencingNode> actual)
         {
-            if( actual == null && geofence.Nodes.Count != 0)
+            if (actual == null && geofence.Nodes.Count != 0)
             {
                 if (geofence.RootIndices == null)
                 {
@@ -117,16 +111,15 @@ namespace IOfThings.Spatial.Geofencing
                 actual = roots;
             }
             return actual;
-         }
-
-        public static IEnumerable<IConditionEvent> Check(this IGeofence geofence, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options = null)
+        }
+        public static IConditionEvent[] Check(this IGeofence geofence, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options = null)
         {
             // sort case where unconsistent segment
             if (sample.First == default(IGeofencingSample))
             {
                 if (sample.Second == default(IGeofencingSample))
                 {
-                    return Enumerable.Empty<IConditionEvent>();
+                    return Array.Empty<IConditionEvent>();
                 }
                 return Check(geofence, sample.Second, options);
             }
@@ -138,7 +131,6 @@ namespace IOfThings.Spatial.Geofencing
 
             return CheckInternal(geofence, sample, options);
         }
-
         public static IConditionEvent[] Check(this IEnumerable<IGeofence> geofences, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options = null)
         {
             // sort case where unconsistent segment
@@ -158,27 +150,35 @@ namespace IOfThings.Spatial.Geofencing
 
             return CheckInternal(geofences, sample,options);
         }
-
         internal static IConditionEvent[] CheckInternal(this IGeofence geofence, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options = null)
         {
+            IConditionEvent[] result = null;
             try
             {
                 // note : modifiers are already sorted into GetPreModifiers
                 if (geofence.GetPreModifiers<IModifier>().ApplyAll(sample, geofence))
                 {
-                    return geofence.Primitives.CheckInternal(sample,options);
+                    result = geofence.Primitives.CheckInternal(sample, options);
                 }
             }
             finally
             {
-                geofence.GetPostModifiers<IModifier>().ApplyAll(sample, geofence);
+                var postmodifiers = geofence.GetPostModifiers<IModifier>().ToArray();
+                if (postmodifiers != null && postmodifiers.Length != 0)
+                {
+                    postmodifiers.ApplyAll(sample, geofence);
+                    if (result != null && result.Length != 0)
+                    {
+                        for (int i = 0; i != result.Length; i++)
+                        {
+                            postmodifiers.ApplyAll(result[i], geofence);
+                        }
+                    }
+                }
             }
-            return Array.Empty<IConditionEvent>();
-
+            return result ?? Array.Empty<IConditionEvent>();
         }
-
         internal static IConditionEvent[] CheckInternal(this IEnumerable<IGeofence> geofences, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options = null) => geofences.SelectMany(p => p.CheckInternal(sample,options)).ToArray();
-
         public static IConditionEvent[] Check(this IGeofence geofence, IGeofencingSample sample, IGeofencingCheckOptions options = null)
         {
             try
@@ -194,9 +194,7 @@ namespace IOfThings.Spatial.Geofencing
                 geofence.GetPostModifiers<IModifier>().ApplyAll(sample, geofence);
             }
             return Array.Empty<IConditionEvent>();
-
         }
-
         public static IConditionEvent[] Check(this IEnumerable<IGeofence> geofences, IGeofencingSample sample, IGeofencingCheckOptions options = null) => geofences.SelectMany(p => p.Check(sample,options)).ToArray();
     }
 }

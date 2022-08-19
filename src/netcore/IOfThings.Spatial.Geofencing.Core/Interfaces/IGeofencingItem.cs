@@ -7,10 +7,7 @@ namespace IOfThings.Spatial.Geofencing
     {
         List<Period> Periods { get; set; }
     }
-    public interface IWithFilter<T>
-    {
-        bool Apply(T mess, params IGeofencingItem[] target);
-    }
+
     public interface IWithPriority
     {
         byte Priority { get; set; }

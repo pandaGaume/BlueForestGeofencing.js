@@ -1,8 +1,6 @@
 ﻿using IOfThings.Spatial.Geography;
 using IOfThings.Spatial.Text.GeoJson;
-using IOfThings.Telemetry;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 

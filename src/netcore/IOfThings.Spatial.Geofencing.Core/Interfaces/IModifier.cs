@@ -1,4 +1,5 @@
 ﻿using IOfThings.Spatial.Geography;
+using IOfThings.Telemetry;
 
 namespace IOfThings.Spatial.Geofencing
 {
@@ -7,8 +8,12 @@ namespace IOfThings.Spatial.Geofencing
         Calendar,
         Predicate,
     }
+    public interface IBehavior<T>
+    {
+        bool Apply(T mess, params IGeofencingItem[] target);
+    }
 
-    public interface IModifier : IGeofencingItem, IWithPriority, IWithFilter<IGeofencingSample>, IWithFilter<ISegment<IGeofencingSample>>
+    public interface IModifier : IGeofencingItem, IWithPriority, IBehavior<IGeofencingSample>, IBehavior<ISegment<IGeofencingSample>>, IBehavior<IConditionEvent>
     {
         string Category { get; set; }
     }
