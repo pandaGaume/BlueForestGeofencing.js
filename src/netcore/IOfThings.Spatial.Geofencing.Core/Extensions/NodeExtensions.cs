@@ -1,4 +1,6 @@
 ﻿using IOfThings.Spatial.Geography;
+using IOfThings.Telemetry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -7,47 +9,171 @@ namespace IOfThings.Spatial.Geofencing
 {
     public static class NodeExtensions
     {
-        public static IEnumerable<IGeofencingEvent> Apply(this IEnumerable<INode> nodes, ISegment<IGeofencingSample> segment) => nodes.SelectMany(n => n.Apply(segment));
-        public static IEnumerable<IGeofencingEvent> Apply(this IEnumerable<INode> nodes, IGeofencingSample location) => nodes.SelectMany(n => n.Apply(location));
-
-        public static IEnumerable<IGeofencingEvent> Apply(this INode node, ISegment<IGeofencingSample> segment)
+        public static IEnumerable<IGeofencingTreeNode> Descendants(this IGeofencingTreeNode n, Func<IGeofencingTreeNode, Boolean> predicate = null)
         {
-            if(segment.Second == null || segment.First == segment.Second )
+            foreach (var c in n.Children(predicate))
             {
-                return Apply(node, segment.First);
+                yield return c;
+                foreach (var cc in c.Descendants(predicate))
+                {
+                    yield return cc;
+                }
             }
-            
-            if (segment.First == null)
+        }
+        public static IEnumerable<IGeofencingTreeNode> Descendants(this IEnumerable<IGeofencingTreeNode> nodes, Func<IGeofencingTreeNode, Boolean> predicate = null)
+        {
+            return nodes.SelectMany(n => n.Descendants(predicate));
+        }
+        public static int Index(this IGeofencingTreeNode node)
+        {
+            var g = node.Geofence;
+            return g != default(IGeofence)? g.Nodes.IndexOf(node) : -1;
+        }
+        public static IEnumerable<IPrimitive> Primitives(this IGeofencingTreeNode node)
+        {
+            var g = node.Geofence;
+            var i = Index(node);
+            if( i != -1)
             {
-                return Apply(node, segment.Second);
+                return g.Primitives.Where(p => p.INodes.Contains(i));
+            }
+            return Enumerable.Empty<IPrimitive>();
+        }
+        public static IEnumerable<IPrimitive> Primitives(this IEnumerable<IGeofencingTreeNode> nodes) => nodes.SelectMany(n => Primitives(n)).Distinct();
+        public static IEnumerable<IConditionEvent> Check(this IGeofencingNode node, IPrimitive primitive, ISegment<IGeofencingSample> sample)
+        {
+            // sort case where unconsistent segment
+            if (sample.First == default(IGeofencingSample))
+            {
+                if (sample.Second == default(IGeofencingSample))
+                {
+                    return Enumerable.Empty<IConditionEvent>();
+                }
+                return CheckInternal(node, primitive, sample.Second);
             }
 
-            return Enumerable.Empty<IGeofencingEvent>();
+            if (sample.Second == default(IGeofencingSample) || sample.First == sample.Second)
+            {
+                return CheckInternal(node, primitive, sample.First);
+            }
+
+            return CheckInternal(node, primitive, sample);
         }
-        public static IEnumerable<IGeofencingEvent> Apply(this INode node, IGeofencingSample location)
+        public static IEnumerable<IConditionEvent> Check(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, ISegment<IGeofencingSample> sample)
         {
-            return Enumerable.Empty<IGeofencingEvent>();
+            // sort case where unconsistent segment
+            if (sample.First == default(IGeofencingSample))
+            {
+                if (sample.Second == default(IGeofencingSample))
+                {
+                    return Enumerable.Empty<IConditionEvent>();
+                }
+                return CheckInternal(nodes, primitive, sample.Second);
+            }
+
+            if (sample.Second == default(IGeofencingSample) || sample.First == sample.Second)
+            {
+                return CheckInternal(nodes, primitive, sample.First);
+            }
+
+            return CheckInternal(nodes, primitive, sample);
+        }
+        internal static IEnumerable<IConditionEvent> CheckInternal(this IGeofencingNode node, IPrimitive primitive, ISegment<IGeofencingSample> sample)
+        {
+            try
+            {
+                // note : modifiers are already sorted into GetPreModifiers
+                if (primitive.GetPreModifiers<IModifier>().ApplyAll(sample, primitive, node))
+                {
+                    var shape = node.GetShape();
+                    try
+                    {
+                        if (shape.GetPreModifiers<IModifier>().ApplyAll(sample, shape, node))
+                        {
+                            return shape.CheckImpl(primitive, node, sample);
+                        }
+                    }
+                    finally
+                    {
+                        shape.GetPostModifiers<IModifier>().ApplyAll(sample, shape, node);
+                    }
+                }
+            }
+            finally
+            {
+                primitive.GetPostModifiers<IModifier>().ApplyAll(sample, primitive, node);
+            }
+            return Enumerable.Empty<IConditionEvent>();
         }
 
-        public static void Invalidate(this IEnumerable<INode> nodes)
-        {
-            foreach (var n in nodes) n.Invalidate();
-        }
+        internal static IEnumerable<IConditionEvent> CheckInternal(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, ISegment<IGeofencingSample> sample) => nodes.SelectMany(n => CheckInternal(n, primitive, sample));
 
-        public static IShape GetShape(this INode n) => n.Geofence?.Shapes?[n.IShape];
-        public static Matrix4x4 BakeLocalTransform(this INode n)
+        internal static IEnumerable<IConditionEvent> CheckInternal(this IGeofencingNode node, IPrimitive primitive, IGeofencingSample sample)
         {
-            var t = Matrix4x4.CreateTranslation(n.Translation);
-            var r = Matrix4x4.CreateFromQuaternion(n.Rotation);
+            try
+            {
+                // note : modifiers are already sorted into GetPreModifiers
+                if (primitive.GetPreModifiers<IModifier>().ApplyAll(sample, primitive, node))
+                {
+                    var shape = node.GetShape();
+                    try
+                    {
+                        if (shape.GetPreModifiers<IModifier>().ApplyAll(sample, shape, node))
+                        {
+                            return shape.CheckImpl(primitive, node, sample);
+                        }
+                    }
+                    finally
+                    {
+                        shape.GetPostModifiers<IModifier>().ApplyAll(sample, shape, node);
+                    }
+                }
+            }
+            finally
+            {
+                primitive.GetPostModifiers<IModifier>().ApplyAll(sample, primitive, node);
+            }
+            return Enumerable.Empty<IConditionEvent>();
+        }
+        internal static IEnumerable<IConditionEvent> CheckInternal(this IEnumerable<IGeofencingNode> nodes, IPrimitive primitive, IGeofencingSample sample) => nodes.SelectMany(n=>CheckInternal(n,primitive,sample));
+
+        public static IGeofencingShape GetShape(this IGeofencingNode n)
+        {
+            var shapes = n.Geofence?.Shapes;
+            if(n.IShape < 0 || shapes == null || n.IShape >= shapes.Count)
+            {
+                return default(IGeofencingShape);
+            }
+            return shapes[n.IShape];
+        }
+        public static Matrix4x4 BakeLocalTransform(this IGeofencingNode n)
+        {
             var s = Matrix4x4.CreateScale(n.Scale);
-            return t * r * s;
+            var r = Matrix4x4.CreateFromQuaternion(n.Rotation);
+            var t = Matrix4x4.CreateTranslation(n.Translation);
+            if ( s.IsIdentity && r.IsIdentity)
+            {
+                return t;
+            }
+            var env = n.GetShape()?.BuildEnvelope();
+            if (env != null)
+            {
+                var pivot = env.GetCenter(); ;
+                if (pivot != null)
+                {
+                    var pv = new Vector3((float)pivot.Longitude, (float)pivot.Latitude, (float)(pivot.Altitude.HasValue ? pivot.Altitude.Value : 0));
+                    var t0 = Matrix4x4.CreateTranslation(-pv);
+                    var t1 = Matrix4x4.CreateTranslation(pv);
+                    return t0 * t * r * s * t1;
+                }
+            }
+            return s*r*t;
         }
-        public static Matrix4x4 BakeGlobalTransform(this ITreeNode n)
+        public static Matrix4x4 BakeWorldTransform(this IGeofencingTreeNode n)
         {
-            return n.Parent != null ? n.Parent.GlobalTransform * n.Transform : n.Transform ;
+            return n.Parent != null ? n.Parent.WorldTransform * n.LocalTransform : n.LocalTransform ;
         }
-
-        public static bool TryGetParent(this ITreeNode n, out ITreeNode parent)
+        public static bool TryGetParent(this IGeofencingTreeNode n, out IGeofencingTreeNode parent)
         {
             var i = n.Geofence.Nodes.IndexOf(n);
             parent = default;
@@ -65,72 +191,9 @@ namespace IOfThings.Spatial.Geofencing
             return false;
         }
 
-        public static T GetSampleContext<T>(this INode node, IGeofencingSample sample)
-            where T : IGeofencingContext
-        {
-            if (sample.Cache != null)
-            {
-                var key = GeofencingKey.SharedPool.Get();
-                key.Id = node.Id;
-                key.Who = sample.Who;
-                try
-                {
-                    if (sample.Cache.TryGetValue(key, out var context))
-                    {
-                        return (T)context;
-                    }
-                }
-                finally
-                {
-                    GeofencingKey.SharedPool.Return(key);
-                }
-            }
-            return default;
-        }
-        public static void CreateSampleContext<T>(this INode node, IGeofencingSample sample, T context)
-            where T : IGeofencingContext
-        {
-            if (sample.Cache != null)
-            {
-                var key = new GeofencingKey(node.Id, sample.Who);
-                var e = sample.Cache.CreateEntry(key);
-                e.Value = context;
-            }
-        }
-
-        public static bool IsEnabled(this ITreeNode node)
-        {
-            if (!node.Enabled) return false;
-            var n = node.Parent;
-            if (n != null)
-            {
-                do
-                {
-                    if (!n.Enabled) return false;
-                    n = node.Parent;
-                } while (n != null);
-            }
-            return true;
-        }
-
-        public static bool IsConsumed(this ITreeNode node)
-        {
-            if (!node.Consumed) return false;
-            var n = node.Parent;
-            if (n != null)
-            {
-                do
-                {
-                    if (!n.Consumed) return false;
-                    n = node.Parent;
-                } while (n != null);
-            }
-            return true;
-        }
-
-        public static void Enable(this ITreeNode node) => SetEnable(node, true);
-        public static void Disable(this ITreeNode node) => SetEnable(node, false);
-        public static void SetEnable(this ITreeNode node, bool e)
+        public static void Enable(this IGeofencingTreeNode node) => SetEnable(node, true);
+        public static void Disable(this IGeofencingTreeNode node) => SetEnable(node, false);
+        public static void SetEnable(this IGeofencingTreeNode node, bool e)
         {
             if (node.Enabled != e)
             {
@@ -141,7 +204,7 @@ namespace IOfThings.Spatial.Geofencing
                 }
             }
         }
-        public static void Consume(this ITreeNode node)
+        public static void Consume(this IGeofencingTreeNode node)
         {
             if (!node.Consumed)
             {

@@ -1,6 +1,4 @@
-﻿using IOfThings.Spatial.Geofencing.Text.Json;
-using IOfThings.Spatial.Geography;
-using IOfThings.Telemetry;
+﻿using IOfThings.Text.Json;
 
 namespace IOfThings.Spatial.Geofencing
 {
@@ -31,6 +29,7 @@ namespace IOfThings.Spatial.Geofencing
 
     public enum TriggerType
     {
+        Unknown,
         Entering,
         Inside,
         Exiting,

@@ -1,14 +1,26 @@
 ﻿using IOfThings.Spatial.Geography;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IOfThings.Spatial.Geofencing
 {
     public static class ModifierExtensions
     {
-        public static void Apply<T> (this IEnumerable<IModifier> modifiers, T data, IGeofencingItem target)
-            where T : ILocated
+        public static bool ApplyAll(this IEnumerable<IModifier> modifiers, ISegment<IGeofencingSample> data, params IGeofencingItem[] target)
         {
-            foreach (var m in modifiers) m.Apply(data, target);
+            if (modifiers != null)
+            {
+                return modifiers.All(m => m.Apply(data, target));
+            }
+            return true;
+        }
+        public static bool ApplyAll(this IEnumerable<IModifier> modifiers, IGeofencingSample data, params IGeofencingItem[] target)
+        {
+            if (modifiers != null)
+            {
+                return modifiers.All(m => m.Apply(data, target));
+            }
+            return true;
         }
     }
 }

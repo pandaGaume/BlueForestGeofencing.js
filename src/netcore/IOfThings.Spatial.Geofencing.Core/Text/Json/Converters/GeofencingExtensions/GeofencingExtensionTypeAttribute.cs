@@ -2,7 +2,7 @@
 
 namespace IOfThings.Spatial.Geofencing.Text.Json
 {
-    public class JsonPolymorphicTypeAttribute : Attribute
+    public class GeofencingExtensionTypeAttribute : Attribute
     {
         public string Name { get; set; }
     }

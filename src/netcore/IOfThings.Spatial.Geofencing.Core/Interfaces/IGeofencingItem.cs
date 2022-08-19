@@ -1,15 +1,16 @@
-﻿using IOfThings.Spatial.Geofencing.Text.Json;
-using IOfThings.Spatial.Geography;
+﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace IOfThings.Spatial.Geofencing
 {
+    public interface IWithPeriods
+    {
+        List<Period> Periods { get; set; }
+    }
     public interface IWithFilter<T>
     {
-        bool Accept(T mess);
+        bool Apply(T mess, params IGeofencingItem[] target);
     }
-
     public interface IWithPriority
     {
         byte Priority { get; set; }
@@ -19,8 +20,10 @@ namespace IOfThings.Spatial.Geofencing
         string Id { get; set; }
     }
 
-    public interface IGeofencingItem
+    public interface IGeofencingItem : IWithExtensions
     {
+        event EventHandler<bool> StatusChanged;
+
         string Type { get; }
         IGeofence Geofence { get; set; }
         bool Consumed { get; set; }
@@ -30,6 +33,7 @@ namespace IOfThings.Spatial.Geofencing
         string[] Tags { get; set; }
         int[] PreModifierIndices { get; set; }
         int[] PostModifierIndices { get; set; }
+        void Invalidate(bool forward = false);
+        void Validate();
     }
-
 }

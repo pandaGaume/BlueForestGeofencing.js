@@ -11,5 +11,10 @@
         /// used to register the asset id ie- Who
         /// </summary>
         string Who { get; }
+
+        /// <summary>
+        /// used to keep versioning of the cached item
+        /// </summary>
+        int Version { get; }
     }
 }

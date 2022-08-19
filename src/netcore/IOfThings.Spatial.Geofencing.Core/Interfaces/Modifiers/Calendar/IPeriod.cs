@@ -19,5 +19,6 @@ namespace IOfThings.Spatial.Geofencing
         public RecurrenceType? RecurrenceType { get; set; }
         public int? RecurrenceCount { get; set; }
         public bool IsValid(DateTime timestamp);
+        public bool IsValid(IValueRange<DateTime> range);
     }
 }

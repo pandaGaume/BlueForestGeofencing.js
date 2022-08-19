@@ -3,6 +3,6 @@
     public interface IPredicateParams
     {
         public IGeofencingSample Input { get; set; }
-        public IGeofencingItem Target { get; set; }
+        public IGeofencingItem[] Target { get; set; }
     }
 }

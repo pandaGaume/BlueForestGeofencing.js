@@ -1,6 +1,4 @@
-﻿using IOfThings.Spatial.Geofencing.Text.Json;
-
-namespace IOfThings.Spatial.Geofencing
+﻿namespace IOfThings.Spatial.Geofencing
 {
     public enum PrimitiveType
     {

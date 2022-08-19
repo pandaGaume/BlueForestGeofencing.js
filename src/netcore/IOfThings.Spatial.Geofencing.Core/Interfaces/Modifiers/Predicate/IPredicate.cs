@@ -1,6 +1,4 @@
-﻿
-using IOfThings.Spatial.Geofencing.Text.Json;
-using IOfThings.Spatial.Geography;
+﻿using IOfThings.Text.Json;
 using System;
 
 namespace IOfThings.Spatial.Geofencing

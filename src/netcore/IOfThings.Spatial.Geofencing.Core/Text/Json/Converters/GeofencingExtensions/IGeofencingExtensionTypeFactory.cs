@@ -2,7 +2,7 @@
 
 namespace IOfThings.Spatial.Geofencing.Text.Json
 {
-    public interface IJsonPolymorphicTypeFactory
+    public interface IGeofencingExtensionTypeFactory
     {
         public Type ForName(string typeName);
     }

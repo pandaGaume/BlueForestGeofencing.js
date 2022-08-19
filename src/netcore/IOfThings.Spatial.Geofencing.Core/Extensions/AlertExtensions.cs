@@ -20,6 +20,5 @@ namespace IOfThings.Spatial.Geofencing
         }
 
         public static bool HasTrigger(this IAlert a, TriggerType t) => (a.TriggerMask & (0x01 << ((int)t))) != 0;
-        public static IEnumerable<IGeofencingEvent> Filter(this IEnumerable<IGeofencingEvent> events, IPrimitive p) => events.Where(e=> (p.TriggerMask & (0x01 << ((int)e.Trigger))) != 0 );
     }
 }

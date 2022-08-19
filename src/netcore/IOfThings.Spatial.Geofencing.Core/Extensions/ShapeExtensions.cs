@@ -1,52 +1,80 @@
 ﻿using IOfThings.Spatial.Geography;
 using IOfThings.Spatial.Text.GeoJson;
+using IOfThings.Telemetry;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace IOfThings.Spatial.Geofencing
 {
-    public static class  ShapeExtensions
+    public static class ShapeExtensions
     {
         public static bool IsInside(this RelativePosition p) => p == RelativePosition.Inside || p == RelativePosition.OnEdge;
-        public static RelativePosition GetDistanceStatus(this IShape shape, double D) => D < shape.Radius.SemiMajorAxis ? RelativePosition.Outside : D > shape.Radius.SemiMajorAxis ? RelativePosition.Inside : RelativePosition.OnEdge;
-
-        public static IEnvelope BuildEnvelope(this IShape shape)
+        public static RelativePosition GetRelativePosition(this IGeofencingShape shape, ILocation l)
         {
-            if (shape.Geofence == null || shape.Geofence.Geometry == null ) return Envelope.Empty();
-            var geometry = shape.Geofence.Geometry;
-            return (geometry.BBox ?? geometry.BuildBBox()).ToEnvelope();
+            if( shape is IGCircle c)
+            {
+                return GetRelativePosition(c,l);
+            }
+            if (shape is IGPolygon p)
+            {
+                return GetRelativePosition(p, l);
+            }
+            if (shape is IGRectangle r)
+            {
+                return GetRelativePosition(r, l);
+            }
+            return RelativePosition.Unknown;
         }
 
-        public static IEnvelope BuildEnvelopeWithRadius(this IShape shape)
+        public static IEnvelope BuildEnvelope(this IGeofencingShape shape)
         {
-            if (shape.Geofence == null || shape.Geofence.Geometry == null) return Envelope.Empty();
+            if (shape.Geofence == null || shape.Geofence.Geometry == null) return null;
+            var geometry = GetGeometry(shape);
+            return (geometry.BBox ?? geometry.BuildBBox()).ToEnvelope();
+        }
+        public static IEnvelope BuildEnvelopeWithRadius(this IGeofencingShape shape, int centerIndex = 0)
+        {
+            if (shape.Geofence == null || shape.Geofence.Geometry == null) return null;
 
             var geometry = shape.Geofence.Geometry;
 
             if (!Radius.IsNullOrEmpty(shape.Radius))
             {
-                EllipticSystem s = shape.Geofence.GeodeticSystem?? EllipticSystem.WGS84;
+                EllipticSystem s = shape.Geofence.GeodeticSystem ?? EllipticSystem.WGS84;
 
                 Position c = null;
                 double? min = null;
                 double? max = null;
 
+                if (geometry is GeoJsonFeature f)
+                {
+                    geometry = f.Geometry;
+                }
+
+                if (geometry is GeoJsonGeometryCollection gc)
+                {
+                    geometry = gc.Geometries.ElementAt(shape.GeometryIndex);
+                }
+
                 if (geometry is GeoJsonPoint p)
                 {
                     c = p.Position;
-                    min = c.Altitude;
-                    max = c.Altitude;
+                }
+
+                if (geometry is GeoJsonMultiPoint mp)
+                {
+                    c = mp.Positions[centerIndex];
                 }
                 else
                 {
                     var env = geometry.BBox ?? geometry.BuildBBox();
                     c = env.GetCenter();
-                    min = env.SouthWest.Altitude;
-                    max = env.NorthEast.Altitude;
                 }
 
-                var lat = c.Latitude;
-                var lon = c.Longitude;
+                var lat = Location.NormalizeLatitude(c.Latitude);
+                var lon = Location.NormalizeLongitude(c.Longitude);
                 var a = shape.Radius.SemiMajorAxis;
                 double b = shape.Radius.HasSemiMinorAxis ? shape.Radius.SemiMinorAxis.Value : a;
 
@@ -66,62 +94,99 @@ namespace IOfThings.Spatial.Geofencing
             }
             return (geometry.BBox ?? geometry.BuildBBox())?.ToEnvelope();
         }
-
-        public static IEnvelope BuildEnvelopeWithRadius(this IPolyline shape)
-        {
-            if (shape.Geofence == null || shape.Geofence.Geometry == null) return Envelope.Empty();
-            var geometry = shape.Geofence.Geometry;
-            if (!Radius.IsNullOrEmpty(shape.Radius))
-            {
-                EllipticSystem s = shape.Geofence.GeodeticSystem ?? EllipticSystem.WGS84;
-
-                // doing all the calculation as radian save a lot of ressources.
-                ILocation[] locAsRadian = null;
-                if (geometry is GeoJsonMultiPoint mp)
-                {
-                    locAsRadian = mp.Positions.Select(p=>new Location(p.Latitude* Ellipsoid.d2r, p.Longitude * Ellipsoid.d2r, p.Altitude)).ToArray();
-                }
-                else if (geometry is GeoJsonLineString ls)
-                {
-                    locAsRadian = ls.Positions.Select(p => new Location(p.Latitude * Ellipsoid.d2r, p.Longitude * Ellipsoid.d2r, p.Altitude)).ToArray();
-                }
-
-                if (locAsRadian != null)
-                {
-                    ILocation a = null, b = null;
-                    double lat, lon;
-                    var envAsRadian = new Envelope();
-                    for (int i = 0; i < locAsRadian.Length; i++)
-                    {
-                        b = locAsRadian[i];
-                        if (a != null)
-                        {
-                            var bearing = s.GetBearing(a.Latitude, a.Longitude, b.Latitude, b.Longitude, false);
-                            var left = bearing - Math.PI / 2;
-                            var right = bearing + Math.PI / 2;
-
-                            s.GetLocationAtDistanceAzimuth(a.Latitude, a.Longitude, left, 0, out lat, out lon, false);
-                            envAsRadian.AddInPlace(lat, lon);
-                            s.GetLocationAtDistanceAzimuth(a.Latitude, a.Longitude, left, 0, out lat, out lon, false);
-                            envAsRadian.AddInPlace(lat, lon);
-                            s.GetLocationAtDistanceAzimuth(a.Latitude, a.Longitude, right, 0, out lat, out lon, false);
-                            envAsRadian.AddInPlace(lat, lon);
-                            s.GetLocationAtDistanceAzimuth(a.Latitude, a.Longitude, right, 0, out lat, out lon, false);
-                            envAsRadian.AddInPlace(lat, lon);
-                        }
-                        a = b;
-                    }
-                    return envAsRadian.ToDegree();
-                }
-            }
-            return (geometry.BBox ?? geometry.BuildBBox())?.ToEnvelope();
-        }
-
-        public static ENUSystem GetENU(this IShape shape, ILocation center)
+        public static ENUSystem GetENU(this IGeofencingShape shape, ILocation center)
         {
             var s = shape.Geofence?.GeodeticSystem;
             if (s != null && s is ENUSystem enu) return enu;
             return new ENUSystem(center, s?.Ellipsoid ?? Ellipsoid.WGS84);
+        }
+
+        public static IGeoJsonObject GetGeometry(this IGeofencingShape shape)
+        {
+            if (shape?.Geofence?.Geometry != null)
+            {
+                var geometry = shape.Geofence.Geometry;
+
+                // accept feature as indirection
+                if (geometry is GeoJsonFeature f)
+                {
+                    geometry = f.Geometry;
+                }
+
+                if (geometry is GeoJsonGeometryCollection gc)
+                {
+                    geometry = gc.Geometries.ElementAt(shape.GeometryIndex);
+                }
+
+                return geometry;
+            }
+            return null;
+        }
+
+        public static ILocation GetLocation(this IGeofencingShape shape, Matrix4x4 transform)
+        {
+            var geometry = GetGeometry(shape);
+            if (geometry != null)
+            {
+                if (geometry is GeoJsonPoint p)
+                {
+                    var c = p.Coordinates;
+                    // Note : Location already normalize coordinate
+                    return new Location(c[1], c[0]).TransformInPlace(transform);
+                }
+
+                if (geometry is GeoJsonMultiPoint mp)
+                {
+                    var c = mp.Coordinates[shape.GeometryIndex];
+                    // Note : Location already normalize coordinate
+                    return new Location(c[1], c[0]).TransformInPlace(transform);
+                }
+            }
+            return default(ILocation);
+        }
+        public static GeoPath GetGeoPath(this IGeofencingShape shape, Matrix4x4 transform)
+        {
+            if (shape?.Geofence?.Geometry != null)
+            {
+                var geometry = shape.Geofence.Geometry;
+
+                // accept feature as indirection
+                if (geometry is GeoJsonFeature f)
+                {
+                    geometry = f.Geometry;
+                }
+                // get the geometry at index if it's collection
+                if (geometry is GeoJsonGeometryCollection gc)
+                {
+                    geometry = gc.Geometries.ElementAt(shape.GeometryIndex);
+                }
+                if (geometry is GeoJsonMultiPoint mp)
+                {
+                    var segment = new TrackSegment(mp.Coordinates.Select(c => new Point(Location.FromCoordinates(c).TransformInPlace(transform))));
+                    return new GeoPath(new Track(segment));
+                }
+                if (geometry is GeoJsonLineString ls)
+                {
+                    var segment = new TrackSegment(ls.Coordinates.Select(c => new Point(Location.FromCoordinates(c).TransformInPlace(transform))));
+                    return new GeoPath(new Track(segment));
+                }
+                if (geometry is GeoJsonMultiLineString mls)
+                {
+                    var segments = mls.Coordinates.Select(c => new TrackSegment(c.Select(c => new Point(Location.FromCoordinates(c).TransformInPlace(transform)))));
+                    return new GeoPath(new Track(segments));
+                }
+                if (geometry is GeoJsonPolygon p)
+                {
+                    var segments = p.Coordinates.Select(c0 => new TrackSegment(c0.Select(c1 => new Point(Location.FromCoordinates(c1).TransformInPlace(transform)))));
+                    return new GeoPath(new Track(segments));
+                }
+                if (geometry is GeoJsonMultiPolygon mpo)
+                {
+                    var tracks = mpo.Coordinates.Select(c0 => new Track( c0.Select(c1=>new TrackSegment(c1.Select(c2 => new Point(Location.FromCoordinates(c2).TransformInPlace(transform)))))));
+                    return new GeoPath(tracks);
+                }
+            }
+            return default(GeoPath);
         }
     }
 }

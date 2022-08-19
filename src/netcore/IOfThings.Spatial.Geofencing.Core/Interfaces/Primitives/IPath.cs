@@ -1,5 +1,5 @@
 ﻿
-using IOfThings.Spatial.Geofencing.Text.Json;
+using IOfThings.Text.Json;
 
 namespace IOfThings.Spatial.Geofencing
 {

@@ -1,11 +1,9 @@
-﻿using IOfThings.Spatial.Geofencing.Text.Json;
-using System.Collections.Generic;
+﻿using IOfThings.Text.Json;
 
 namespace IOfThings.Spatial.Geofencing
 {
     [JsonPolymorphicType(Name = "Calendar")]
-    public interface ICalendar : IModifier, IExpirable
+    public interface ICalendar : IModifier, IExpirable, IWithPeriods
     {
-        public List<Period> Validities { get; set; }
     }
 }

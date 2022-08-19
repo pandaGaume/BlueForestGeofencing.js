@@ -1,22 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using IOfThings.Spatial.Geography;
+using IOfThings.Telemetry;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace IOfThings.Spatial.Geofencing
 {
     public static class PrimitiveExtensions
     {
-        internal static IGeofence BindGeofence(this IEnumerable<IPrimitive> items, IGeofence g)
-        {
-            if (items != null)
-            {
-                foreach (var i in items)
-                {
-                    i.BindGeofence(g);
-                }
-            }
-            return g;
-        }
-
         internal static void BindGeofence(this IPrimitive i, IGeofence g)
         {
             i.Geofence = g;
@@ -25,10 +16,10 @@ namespace IOfThings.Spatial.Geofencing
 
         public static IEnumerable<IAlert> GetAlerts(this IPrimitive p)
         {
-            if (p.IAlerts == null || p.Geofence == null || p.Geofence.Alerts == null ) yield break;
-            for(int i =0; i!= p.IAlerts.Length; i++)
+            if (p.IAlerts == null || p.Geofence == null || p.Geofence.Alerts == null) yield break;
+            for (int i = 0; i != p.IAlerts.Length; i++)
             {
-                if( i > 0 || i <= p.Geofence.Alerts.Count)
+                if (i > 0 || i <= p.Geofence.Alerts.Count)
                 {
                     yield return p.Geofence.Alerts[i];
                 }
@@ -53,5 +44,67 @@ namespace IOfThings.Spatial.Geofencing
             return false;
         }
 
+        public static IEnumerable<IGeofencingTreeNode> GetNodes(this IPrimitive p, Func<IGeofencingTreeNode, bool> predicate = null)
+        {
+            if (p?.Geofence != null && p?.INodes != null)
+            {
+                var nodes = p.Geofence.Nodes;
+                if (nodes != null)
+                {
+                    var selectedFromIndices = p.INodes.Where(i => i >= 0 && i < nodes.Count).Select(i => nodes[i]);
+                    return predicate != null ? selectedFromIndices.Where(predicate) : selectedFromIndices;
+                }
+            }
+            return Enumerable.Empty<IGeofencingTreeNode>();
+        }
+
+        internal static IConditionEvent[] CheckInternal(this IPrimitive primitive, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options = null)
+        {
+            if (primitive.GetPreModifiers<IModifier>().ApplyAll(segment, primitive))
+            {
+                var list = new List<IConditionEvent>(1);
+                foreach (var node in primitive.GetNodes())
+                {
+                    foreach (var alarm in node.CheckInternal(primitive, segment))
+                    {
+                        if (options?.MessageFactory != null)
+                        {
+                            alarm.Message = options.MessageFactory.BuildMessage(alarm, node);
+                        }
+                        list.Add(alarm);
+                    }
+                }
+                return list.ToArray();
+            }
+            return Array.Empty<IConditionEvent>();
+        }
+        internal static IConditionEvent[] CheckInternal(this IPrimitive primitive, IGeofencingSample sample, IGeofencingCheckOptions options = null)
+        {
+            if (primitive.GetPreModifiers<IModifier>().ApplyAll(sample, primitive))
+            {
+                var list = new List<IConditionEvent>(1);
+                foreach (var node in primitive.GetNodes())
+                {
+                    foreach (var alarm in node.CheckInternal(primitive, sample))
+                    {
+                        if(options?.MessageFactory != null)
+                        {
+                            alarm.Message = options.MessageFactory.BuildMessage(alarm, node);
+                        }
+                        list.Add(alarm);
+                    }
+                }
+                return list.ToArray();
+            }
+            return Array.Empty<IConditionEvent>();
+        }
+        internal static IConditionEvent[] CheckInternal(this IEnumerable<IPrimitive> primitives, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options = null)
+        {
+            return primitives.SelectMany(p => p.CheckInternal(segment,options)).ToArray();
+        }
+        internal static IConditionEvent[] CheckInternal(this IEnumerable<IPrimitive> primitives, IGeofencingSample sample, IGeofencingCheckOptions options = null)
+        {
+            return primitives.SelectMany(p => p.CheckInternal(sample,options)).ToArray();
+        }
     }
 }

@@ -19,6 +19,14 @@ namespace IOfThings.Spatial.Geofencing
         RecurrenceType? _rt;
         int? _c;
 
+        public Period() { }
+        public Period(DateTime f, DateTime t) : base(f, t) { }
+        public Period(IPeriod other) : base(other) 
+        {
+            _rt = other.RecurrenceType;
+            _c = other.RecurrenceCount;
+        }
+
         [JsonPropertyName("recurrence")]
         [JsonConverter(typeof(RecurrenceTypeJsonConverter))]
         public RecurrenceType? RecurrenceType { get => _rt; set => _rt = value; }
@@ -48,5 +56,11 @@ namespace IOfThings.Spatial.Geofencing
             }
             return false;
         }
+
+        public virtual bool IsValid(IValueRange<DateTime> range)
+        {
+            return range == null || range.Intersect(this);
+        }
+
     }
 }

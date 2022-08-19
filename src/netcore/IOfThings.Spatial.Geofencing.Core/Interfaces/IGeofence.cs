@@ -1,22 +1,23 @@
-﻿using IOfThings.Spatial.Geofencing.Text.Json;
-using IOfThings.Spatial.Geography;
+﻿using IOfThings.Spatial.Geography;
 using IOfThings.Spatial.Text.GeoJson;
+using IOfThings.Telemetry;
+using IOfThings.Text.Json;
 using System.Collections.Generic;
 
 namespace IOfThings.Spatial.Geofencing
 {
     [JsonPolymorphicType(Name = "Geofence")]
-    public interface IGeofence : IGeofencingItem, IWithIdentity, IGeoBounded
+    public interface IGeofence : IGeofencingItem, IWithIdentity, IGeoBounded, IUseExtensions, IGeofencingTelemetryObserver, IGeofencingCacheProvider, IGeofencingLogProvider
     {
+        string Namespace { get; set; }
         string Comment { get; set; }
-        IGeoJsonGeometry Geometry {get;set;}
+        IGeoJsonObject Geometry {get;set;}
         EllipticSystem GeodeticSystem { get; set; }
         int[] RootIndices { get; set; }
-        IList<ITreeNode> Nodes { get; }
-        IList<IShape> Shapes { get; }
+        IList<IGeofencingTreeNode> Nodes { get; }
+        IList<IGeofencingShape> Shapes { get; }
         IList<IModifier> Modifiers { get; }
         IList<IAlert> Alerts { get; }
         IList<IPrimitive> Primitives { get; }
-        IList<ITreeNode> Roots { get; set; }
     }
 }
