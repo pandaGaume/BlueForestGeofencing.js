@@ -143,22 +143,22 @@ namespace IOfThings.Spatial.Geofencing
         public static Matrix4x4 BakeLocalTransform(this IGeofencingNode n)
         {
             // fast track
-            if (n.Scale == Vector3.One && n.Rotation.IsIdentity)
+            if (n.Scale == Vector3.One && n.Rotation ==  0)
             {
-                return n.Translation == Vector3.Zero ? Matrix4x4.Identity : Matrix4x4.CreateTranslation(n.Translation);
+                return n.Position == Vector3.Zero ? Matrix4x4.Identity : Matrix4x4.CreateTranslation(n.Position);
             }
             // compose the matrix.
             var s = Matrix4x4.CreateScale(n.Scale);
-            var r = Matrix4x4.CreateFromQuaternion(n.Rotation);
-            var t = Matrix4x4.CreateTranslation(n.Translation);
+            var r = Matrix4x4.CreateRotationZ(n.Rotation);
+            var t = Matrix4x4.CreateTranslation(n.Position);
             var pivot = n.GetPivot();
             if (pivot != null &&  pivot.Value != Vector3.Zero)
             {
                 var t0 = Matrix4x4.CreateTranslation(-pivot.Value);
                 var t1 = Matrix4x4.CreateTranslation(pivot.Value);
-                return t0 * t * r * s * t1;
+                return t0 * s * r * t * t1;
             }
-            return t * r * s;
+            return s  * r * t;
         }
         public static Vector3? GetPivot(this IGeofencingNode n)
         {
@@ -168,11 +168,6 @@ namespace IOfThings.Spatial.Geofencing
                 return n.Pivot.Value;
             }
             var p = n.GetShape()?.GetPivot();
-            if( p != null)
-            {
-                // apply translation, otherwise the pivot will always centered into original geometry envelope
-                p = p + n.Translation;
-            }
             return p;
         }
         public static Matrix4x4 BakeWorldTransform(this IGeofencingNode n)

@@ -54,14 +54,15 @@ namespace IOfThings.Spatial.Geofencing
             }
             return Enumerable.Empty<IGeofencingNode>();
         }
-        internal static IConditionEvent[] CheckInternal(this IPrimitive primitive, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options = null)
+        internal static IConditionEvent[] CheckInternal(this IPrimitive primitive, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options )
         {
             if (primitive.GetPreModifiers<IModifier>().ApplyAll(segment, primitive))
             {
                 var list = new List<IConditionEvent>(1);
+                var ef = options?.EventFactory ?? throw new ArgumentNullException(nameof(options.EventFactory));
                 foreach (var node in primitive.GetNodes())
                 {
-                    foreach (var alarm in node.CheckInternal(primitive, segment, options?.EventFactory?? GeofencingEventFactory.Shared))
+                    foreach (var alarm in node.CheckInternal(primitive, segment, ef))
                     {
                         if (options?.MessageFactory != null)
                         {
@@ -74,14 +75,15 @@ namespace IOfThings.Spatial.Geofencing
             }
             return Array.Empty<IConditionEvent>();
         }
-        internal static IConditionEvent[] CheckInternal(this IPrimitive primitive, IGeofencingSample sample, IGeofencingCheckOptions options = null)
+        internal static IConditionEvent[] CheckInternal(this IPrimitive primitive, IGeofencingSample sample, IGeofencingCheckOptions options)
         {
             if (primitive.GetPreModifiers<IModifier>().ApplyAll(sample, primitive))
             {
                 var list = new List<IConditionEvent>(1);
+                var ef = options?.EventFactory ?? throw new ArgumentNullException(nameof(options.EventFactory));
                 foreach (var node in primitive.GetNodes())
                 {
-                    foreach (var alarm in node.CheckInternal(primitive, sample, options?.EventFactory ?? GeofencingEventFactory.Shared))
+                    foreach (var alarm in node.CheckInternal(primitive, sample, ef))
                     {
                         if(options?.MessageFactory != null)
                         {
@@ -94,11 +96,11 @@ namespace IOfThings.Spatial.Geofencing
             }
             return Array.Empty<IConditionEvent>();
         }
-        internal static IConditionEvent[] CheckInternal(this IEnumerable<IPrimitive> primitives, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options = null)
+        internal static IConditionEvent[] CheckInternal(this IEnumerable<IPrimitive> primitives, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options )
         {
             return primitives.SelectMany(p => p.CheckInternal(segment,options)).ToArray();
         }
-        internal static IConditionEvent[] CheckInternal(this IEnumerable<IPrimitive> primitives, IGeofencingSample sample, IGeofencingCheckOptions options = null)
+        internal static IConditionEvent[] CheckInternal(this IEnumerable<IPrimitive> primitives, IGeofencingSample sample, IGeofencingCheckOptions options)
         {
             return primitives.SelectMany(p => p.CheckInternal(sample,options)).ToArray();
         }

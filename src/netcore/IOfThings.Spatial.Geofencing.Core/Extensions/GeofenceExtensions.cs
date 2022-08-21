@@ -112,7 +112,7 @@ namespace IOfThings.Spatial.Geofencing
             }
             return actual;
         }
-        public static IConditionEvent[] Check(this IGeofence geofence, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options = null)
+        public static IConditionEvent[] Check(this IGeofence geofence, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options)
         {
             // sort case where unconsistent segment
             if (sample.First == default(IGeofencingSample))
@@ -150,7 +150,7 @@ namespace IOfThings.Spatial.Geofencing
 
             return CheckInternal(geofences, sample,options);
         }
-        internal static IConditionEvent[] CheckInternal(this IGeofence geofence, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options = null)
+        internal static IConditionEvent[] CheckInternal(this IGeofence geofence, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options)
         {
             IConditionEvent[] result = null;
             try
@@ -178,8 +178,8 @@ namespace IOfThings.Spatial.Geofencing
             }
             return result ?? Array.Empty<IConditionEvent>();
         }
-        internal static IConditionEvent[] CheckInternal(this IEnumerable<IGeofence> geofences, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options = null) => geofences.SelectMany(p => p.CheckInternal(sample,options)).ToArray();
-        public static IConditionEvent[] Check(this IGeofence geofence, IGeofencingSample sample, IGeofencingCheckOptions options = null)
+        internal static IConditionEvent[] CheckInternal(this IEnumerable<IGeofence> geofences, ISegment<IGeofencingSample> sample, IGeofencingCheckOptions options) => geofences.SelectMany(p => p.CheckInternal(sample,options)).ToArray();
+        public static IConditionEvent[] Check(this IGeofence geofence, IGeofencingSample sample, IGeofencingCheckOptions options)
         {
             try
             {
@@ -195,6 +195,6 @@ namespace IOfThings.Spatial.Geofencing
             }
             return Array.Empty<IConditionEvent>();
         }
-        public static IConditionEvent[] Check(this IEnumerable<IGeofence> geofences, IGeofencingSample sample, IGeofencingCheckOptions options = null) => geofences.SelectMany(p => p.Check(sample,options)).ToArray();
+        public static IConditionEvent[] Check(this IEnumerable<IGeofence> geofences, IGeofencingSample sample, IGeofencingCheckOptions options) => geofences.SelectMany(p => p.Check(sample,options)).ToArray();
     }
 }
