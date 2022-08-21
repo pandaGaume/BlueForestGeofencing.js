@@ -1,5 +1,4 @@
 ﻿using IOfThings.Spatial.Geography;
-using IOfThings.Telemetry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,10 +55,10 @@ namespace IOfThings.Spatial.Geofencing
 
             return Enumerable.Empty<Vector2<double>>();
         }
-        public static IEnumerable<IConditionEvent> CheckZone(this IGCircle circle, IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> segment, float distance, IGeofencingEventFactory eventFactory)
+        public static IEnumerable<IGeofencingEvent> CheckZone(this IGCircle circle, IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> segment, float distance, IGeofencingEventFactory eventFactory)
         {
 
-            IConditionEvent[] events = null;
+            IGeofencingEvent[] events = null;
             var areaIntersections = Intersections(circle, node, distance, segment);
             var count = areaIntersections.Count();
             if (count != 0)
@@ -92,7 +91,7 @@ namespace IOfThings.Spatial.Geofencing
                             {
                                 if (sa.IsInside())
                                 {
-                                    events = new IConditionEvent[] {
+                                    events = new IGeofencingEvent[] {
                                                         eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Exiting, intersection, whenIntersection),
                                                         eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Outside, B           , segment.Second.When)};
                                     break;
@@ -103,16 +102,16 @@ namespace IOfThings.Spatial.Geofencing
                                 {
                                     if (B.Altitude.Value < E.Lowest)
                                     {
-                                        events = new IConditionEvent[] { eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Under, B, segment.Second.When) };
+                                        events = new IGeofencingEvent[] { eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Under, B, segment.Second.When) };
                                         break;
                                     }
                                     if (B.Altitude.Value > E.Highest)
                                     {
-                                        events = new IConditionEvent[] { eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Above, B, segment.Second.When) };
+                                        events = new IGeofencingEvent[] { eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Above, B, segment.Second.When) };
                                         break;
                                     }
                                 }
-                                events = new IConditionEvent[] {
+                                events = new IGeofencingEvent[] {
                                                     eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Entering, intersection, whenIntersection),
                                                     eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Inside  , B           , segment.Second.When)};
                                 break;
@@ -122,17 +121,17 @@ namespace IOfThings.Spatial.Geofencing
                             {
                                 if (B.Altitude.Value < E.Lowest)
                                 {
-                                    events = new IConditionEvent[] { eventFactory.CreateEvent(eventFactory.BuildActorId(node.Geofence), who, node.Id, TriggerType.Under, intersection, segment.Second.When) };
+                                    events = new IGeofencingEvent[] { eventFactory.CreateEvent(eventFactory.BuildActorId(node.Geofence), who, node.Id, TriggerType.Under, intersection, segment.Second.When) };
                                     break;
                                 }
                                 if (B.Altitude.Value > E.Highest)
                                 {
-                                    events = new IConditionEvent[] { eventFactory.CreateEvent(eventFactory.BuildActorId(node.Geofence), who, node.Id, TriggerType.Above, intersection, segment.Second.When) };
+                                    events = new IGeofencingEvent[] { eventFactory.CreateEvent(eventFactory.BuildActorId(node.Geofence), who, node.Id, TriggerType.Above, intersection, segment.Second.When) };
                                     break;
                                 }
                             }
                             // we touch the circle. From outside to outside with one entering/exit point
-                            events = new IConditionEvent[] {
+                            events = new IGeofencingEvent[] {
                                             eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Entering, intersection, whenIntersection),
                                             eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Inside  , intersection, whenIntersection),
                                             eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Exiting , intersection, whenIntersection),
@@ -156,21 +155,21 @@ namespace IOfThings.Spatial.Geofencing
                             {
                                 if (B.Altitude.Value < E.Lowest)
                                 {
-                                    events = new IConditionEvent[] {
+                                    events = new IGeofencingEvent[] {
                                                       eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Under, firstIntersection, segment.Second.When),
                                                       eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Under, secondIntersection, segment.Second.When)};
                                     break;
                                 }
                                 if (B.Altitude.Value > E.Highest)
                                 {
-                                    events = new IConditionEvent[] {
+                                    events = new IGeofencingEvent[] {
                                                       eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Above, firstIntersection, segment.Second.When),
                                                       eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Above, secondIntersection, segment.Second.When)};
                                     break;
                                 }
                             }
                             // It's a full crossing : From outside to outside with one entering point and one exit point
-                            events = new IConditionEvent[] {
+                            events = new IGeofencingEvent[] {
                                                 eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Entering, firstIntersection , whenFirstIntersection),
                                                 eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Inside  , firstIntersection , whenFirstIntersection),
                                                 eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Exiting , secondIntersection, whenSecondIntersection),
@@ -184,9 +183,9 @@ namespace IOfThings.Spatial.Geofencing
             {
                 return events;
             }
-            return Enumerable.Empty<IConditionEvent>();
+            return Enumerable.Empty<IGeofencingEvent>();
         }
-        public static IEnumerable<IConditionEvent> CheckFence(this IGCircle circle, IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> segment, float distance, IGeofencingEventFactory eventFactory)
+        public static IEnumerable<IGeofencingEvent> CheckFence(this IGCircle circle, IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> segment, float distance, IGeofencingEventFactory eventFactory)
         {
             var intersections = Intersections(circle, node, distance, segment);
             var count = intersections.Count();

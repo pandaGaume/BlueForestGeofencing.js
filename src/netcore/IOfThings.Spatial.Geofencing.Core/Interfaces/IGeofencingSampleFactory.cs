@@ -3,8 +3,9 @@ using System;
 
 namespace IOfThings.Spatial.Geofencing
 {
-    public interface IGeofencingSampleFactory
+    public interface IGeofencingSampleFactory<T>
+        where T : IGeofencingSample
     {
-        IGeofencingSample CreateGeofencingSample(string who, ILocation where, DateTime when, long? index = null);
+        T CreateGeofencingSample(string who, ILocation where, DateTime when, long? index = null);
     }
 }

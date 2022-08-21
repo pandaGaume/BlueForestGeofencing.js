@@ -1,6 +1,5 @@
 ﻿using IOfThings.Spatial.Geography;
 using IOfThings.Spatial.Text.GeoJson;
-using IOfThings.Telemetry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,9 +90,9 @@ namespace IOfThings.Spatial.Geofencing
                 }
 
         }
-        public static IEnumerable<IConditionEvent> CheckFence(this IGLine line, IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> segment, IGeofencingEventFactory eventFactory)
+        public static IEnumerable<IGeofencingEvent> CheckFence(this IGLine line, IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> segment, IGeofencingEventFactory eventFactory)
         {
-            IConditionEvent[] events = null;
+            IGeofencingEvent[] events = null;
             if (primitive.TypeCode == PrimitiveType.Fence)
             {
                 var geoIntersections = FenceIntersections(line, node, 0, segment);
@@ -111,7 +110,7 @@ namespace IOfThings.Spatial.Geofencing
                                 var intersection = ENU.ConvertENUToGeodetic(geoIntersections).FirstOrDefault();
                                 string who = segment.First.Who;
                                 DateTime whenIntersection = segment.GetIntersectionTime(intersection, ENU);
-                                events = new IConditionEvent[] { eventFactory.CreateEvent(eventFactory.BuildActorId(node.Geofence), who, node.Id, TriggerType.Crossing, intersection, whenIntersection) };
+                                events = new IGeofencingEvent[] { eventFactory.CreateEvent(eventFactory.BuildActorId(node.Geofence), who, node.Id, TriggerType.Crossing, intersection, whenIntersection) };
                                 break;
                             }
                         case 2:
@@ -127,7 +126,7 @@ namespace IOfThings.Spatial.Geofencing
                                 DateTime whenSecondIntersection = segment.GetIntersectionTime(secondIntersection, ENU);
 
                                 var actorId = eventFactory.BuildActorId(node.Geofence);
-                                events = new IConditionEvent[] {
+                                events = new IGeofencingEvent[] {
                                 eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Crossing, firstIntersection , whenFirstIntersection),
                                 eventFactory.CreateEvent(actorId, who, node.Id, TriggerType.Crossing , secondIntersection, whenSecondIntersection)};
                                 break;
@@ -139,7 +138,7 @@ namespace IOfThings.Spatial.Geofencing
             {
                 return events;
             }
-            return Enumerable.Empty<IConditionEvent>();
+            return Enumerable.Empty<IGeofencingEvent>();
         }
     }
 }

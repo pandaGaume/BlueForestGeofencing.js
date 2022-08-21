@@ -1,5 +1,4 @@
 ﻿using IOfThings.Spatial.Geography;
-using IOfThings.Telemetry;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -23,7 +22,7 @@ namespace IOfThings.Spatial.Geofencing
             }
             return true;
         }
-        public static bool ApplyAll(this IEnumerable<IModifier> modifiers, IConditionEvent data, params IGeofencingItem[] target)
+        public static bool ApplyAll(this IEnumerable<IModifier> modifiers, IGeofencingEvent data, params IGeofencingItem[] target)
         {
             if (modifiers != null && data != null )
             {

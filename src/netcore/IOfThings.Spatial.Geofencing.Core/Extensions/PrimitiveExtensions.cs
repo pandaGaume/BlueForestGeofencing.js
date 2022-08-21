@@ -1,5 +1,4 @@
 ﻿using IOfThings.Spatial.Geography;
-using IOfThings.Telemetry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,11 +53,11 @@ namespace IOfThings.Spatial.Geofencing
             }
             return Enumerable.Empty<IGeofencingNode>();
         }
-        internal static IConditionEvent[] CheckInternal(this IPrimitive primitive, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options )
+        internal static IGeofencingEvent[] CheckInternal(this IPrimitive primitive, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options )
         {
             if (primitive.GetPreModifiers<IModifier>().ApplyAll(segment, primitive))
             {
-                var list = new List<IConditionEvent>(1);
+                var list = new List<IGeofencingEvent>(1);
                 var ef = options?.EventFactory ?? throw new ArgumentNullException(nameof(options.EventFactory));
                 foreach (var node in primitive.GetNodes())
                 {
@@ -73,13 +72,13 @@ namespace IOfThings.Spatial.Geofencing
                 }
                 return list.ToArray();
             }
-            return Array.Empty<IConditionEvent>();
+            return Array.Empty<IGeofencingEvent>();
         }
-        internal static IConditionEvent[] CheckInternal(this IPrimitive primitive, IGeofencingSample sample, IGeofencingCheckOptions options)
+        internal static IGeofencingEvent[] CheckInternal(this IPrimitive primitive, IGeofencingSample sample, IGeofencingCheckOptions options)
         {
             if (primitive.GetPreModifiers<IModifier>().ApplyAll(sample, primitive))
             {
-                var list = new List<IConditionEvent>(1);
+                var list = new List<IGeofencingEvent>(1);
                 var ef = options?.EventFactory ?? throw new ArgumentNullException(nameof(options.EventFactory));
                 foreach (var node in primitive.GetNodes())
                 {
@@ -94,13 +93,13 @@ namespace IOfThings.Spatial.Geofencing
                 }
                 return list.ToArray();
             }
-            return Array.Empty<IConditionEvent>();
+            return Array.Empty<IGeofencingEvent>();
         }
-        internal static IConditionEvent[] CheckInternal(this IEnumerable<IPrimitive> primitives, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options )
+        internal static IGeofencingEvent[] CheckInternal(this IEnumerable<IPrimitive> primitives, ISegment<IGeofencingSample> segment, IGeofencingCheckOptions options )
         {
             return primitives.SelectMany(p => p.CheckInternal(segment,options)).ToArray();
         }
-        internal static IConditionEvent[] CheckInternal(this IEnumerable<IPrimitive> primitives, IGeofencingSample sample, IGeofencingCheckOptions options)
+        internal static IGeofencingEvent[] CheckInternal(this IEnumerable<IPrimitive> primitives, IGeofencingSample sample, IGeofencingCheckOptions options)
         {
             return primitives.SelectMany(p => p.CheckInternal(sample,options)).ToArray();
         }

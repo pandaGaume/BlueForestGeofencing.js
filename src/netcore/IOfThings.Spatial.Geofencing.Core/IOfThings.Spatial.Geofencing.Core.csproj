@@ -13,7 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\DotVision.Motion.V2.Gateway\IOfThings.Spatial.Geography\IOfThings.Spatial.Geography.csproj" />
     <ProjectReference Include="..\..\..\..\DotVision.Motion.V2.Gateway\IOfThings.Spatial.Geometry\IOfThings.Spatial.csproj" />
-    <ProjectReference Include="..\..\..\..\DotVision.Motion.V2.Gateway\IOfThings.Telemetry\IOfThings.Telemetry.csproj" />
     <ProjectReference Include="..\..\..\..\DotVision.Motion.V2.Gateway\IOfThings.Text.Json\IOfThings.Text.Json.csproj" />
     <ProjectReference Include="..\..\..\..\GeoJsonSerializer\src\IOfThings.Spatial.Text.GeoJson\IOfThings.Spatial.Text.GeoJson\IOfThings.Spatial.Text.GeoJson.csproj" />
   </ItemGroup>

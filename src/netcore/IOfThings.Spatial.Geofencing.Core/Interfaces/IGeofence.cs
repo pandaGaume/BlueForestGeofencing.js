@@ -1,13 +1,12 @@
 ﻿using IOfThings.Spatial.Geography;
 using IOfThings.Spatial.Text.GeoJson;
-using IOfThings.Telemetry;
 using IOfThings.Text.Json;
 using System.Collections.Generic;
 
 namespace IOfThings.Spatial.Geofencing
 {
     [JsonPolymorphicType(Name = "Geofence")]
-    public interface IGeofence : IGeofencingItem, IWithIdentity, IGeoBounded, IUseExtensions, IGeofencingTelemetryObserver, IGeofencingCacheProvider, IGeofencingLogProvider
+    public interface IGeofence : IGeofencingItem, IWithIdentity, IGeoBounded, IUseExtensions, IGeofencingCacheProvider, IGeofencingLogProvider
     {
         string Namespace { get; set; }
         string Comment { get; set; }

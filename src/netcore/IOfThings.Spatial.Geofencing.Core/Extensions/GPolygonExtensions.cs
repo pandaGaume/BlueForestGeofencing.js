@@ -1,6 +1,5 @@
 ﻿using IOfThings.Spatial.Geography;
 using IOfThings.Spatial.Text.GeoJson;
-using IOfThings.Telemetry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,7 +77,7 @@ namespace IOfThings.Spatial.Geofencing
             return polygon;
         }
 
-        public static IEnumerable<IConditionEvent> CheckFence(this IGPolygon gpoly, IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> segment, float distance, IGeofencingEventFactory eventFactory)
+        public static IEnumerable<IGeofencingEvent> CheckFence(this IGPolygon gpoly, IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> segment, float distance, IGeofencingEventFactory eventFactory)
         {
             List<Vector2<double>> intersections = null;
 
@@ -178,7 +177,7 @@ namespace IOfThings.Spatial.Geofencing
             }
         }
 
-        public static IEnumerable<IConditionEvent> CheckZone(this IGPolygon gpoly, IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> segment, float distance, IGeofencingEventFactory eventFactory)
+        public static IEnumerable<IGeofencingEvent> CheckZone(this IGPolygon gpoly, IPrimitive primitive, IGeofencingNode node, ISegment<IGeofencingSample> segment, float distance, IGeofencingEventFactory eventFactory)
         {
             List<Vector2<double>> intersections = null;
 

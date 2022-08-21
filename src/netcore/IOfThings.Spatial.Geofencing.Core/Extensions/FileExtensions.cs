@@ -9,12 +9,12 @@ namespace IOfThings.Spatial.Geofencing
 {
     public static class FileExtensions
     {
-        public static IEnumerable<IGeofence> OpenGeofences(this FileInfo f, ILogger logger = null)
+        public static IEnumerable<T> OpenGeofences<T>(this FileInfo f, ILogger logger = null) where T: IGeofence
         {
             if (!f.Exists)
             {
                 logger?.LogWarning("File not found {n}", f.FullName);
-                return Enumerable.Empty<IGeofence>();
+                return Enumerable.Empty<T>();
             }
             try
             {
@@ -25,13 +25,13 @@ namespace IOfThings.Spatial.Geofencing
                     {
                         json = reader.ReadToEnd();
                     }
-                    return GeofencingJsonSerializer.Deserialize(json);
+                    return GeofencingJsonSerializer.Deserialize<T>(json);
                 }
             }
             catch (Exception e)
             {
                 logger?.LogError(e, "Unable to read {n}", f.FullName);
-                return Enumerable.Empty<IGeofence>();
+                return Enumerable.Empty<T>();
             }
         }
     }
