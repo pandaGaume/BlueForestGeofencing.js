@@ -9,11 +9,11 @@ namespace IOfThings.Spatial.Geofencing
         /// If set, let geofencing item use it for they own state management.
         /// Pattern is to register a specific cache object for each node/asset key pair.
         /// </summary>
-        IMemoryCache MemoryCache { get; }
+        IMemoryCache PrimaryCache { get; }
         /// <summary>
         /// If set, let geofencing item use it for they own state management.
         /// Pattern is to register a specific cache object for each node/asset key pair.
         /// </summary>
-        IDistributedCache PersistentCache { get; }
+        IDistributedCache SecondaryCache { get; }
     }
 }
